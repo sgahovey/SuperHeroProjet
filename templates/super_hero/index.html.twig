@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Super Héros{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des Super Héros</h1>
+
+    {% if super_heroes|length > 0 %}
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Nom</th>
+                    <th>Alter Ego</th>
+                    <th>Disponible</th>
+                    <th>Niveau d'énergie</th>
+                    <th>Biographie</th>
+                    <th>Image</th>
+                    <th>Créé le</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for super_hero in super_heroes %}
+                <tr>
+                    <td>{{ super_hero.id }}</td>
+                    <td>{{ super_hero.nom }}</td>
+                    <td>{{ super_hero.alterEgo }}</td>
+                    <td>{{ super_hero.estDisponible ? 'Oui' : 'Non' }}</td>
+                    <td>{{ super_hero.niveauEnergie }}</td>
+                    <td>{{ super_hero.biographie|slice(0, 50) ~ '...' }}</td>
+                    <td>
+                                            <!-- Affichage de l'image si elle existe, sinon affiche "Pas d'image" -->
+                        {% if super_hero.nomImage %}
+                            <img src="{{ asset('uploads/superheroes/' ~ super_hero.nomImage) }}" alt="{{ super_hero.nom }}" style="width: 50px; height: auto;">
+                        {% else %}
+                            Pas d'image
+                        {% endif %}
+                    </td>
+                                        <!-- Date de création modif -->
+                    <td>{{ super_hero.creeLe ? super_hero.creeLe|date('d/m/Y H:i') : '' }}</td>
+                    <td>
+                                        <!-- Boutons pour afficher un SuperHéros -->
+                        <a href="{{ path('app_super_hero_show', {'id': super_hero.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                                        <!-- Boutons pour modifier un SuperHéros -->
+                        <a href="{{ path('app_super_hero_edit', {'id': super_hero.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+            <!-- Message d'alerte si il n'y a pas de superhéros -->
+        <div class="alert alert-warning" role="alert">
+            Aucun Super Héros.
+        </div>
+    {% endif %}
+    <!-- Bouton pour créer un nouveau Super Héros -->
+    <a href="{{ path('app_super_hero_new') }}" class="btn btn-primary mt-3">Créer un nouveau Super Héros</a>
+</div>
+{% endblock %}
