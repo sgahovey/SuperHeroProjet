@@ -1,20 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello IndexController!{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="min-h-screen bg-background text-white font-body flex flex-col items-center">
+    <!-- Section principale -->
+    <h1 class="text-5xl font-hero text-primary tracking-wide mb-6">
+        Bienvenue sur le Hub des Super Héros
+    </h1>
+    <p class="text-lg text-gray-300 mb-8 text-center max-w-2xl">
+        Prenez le contrôle total de vos héros légendaires, de leurs pouvoirs extraordinaires et des missions épiques qu'ils doivent accomplir !
+    </p>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <!-- Boutons vers les différentes sections -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <!-- Super Héros -->
+        <a href="{{ path('app_super_hero_index') }}" 
+           class="block bg-gradient-to-r from-blue-500 to-blue-700 text-white text-center py-3 px-6 rounded-lg shadow-lg hover:scale-105 transition transform">
+            Liste des Super Héros
+        </a>
+        <!-- Pouvoirs -->
+        <a href="{{ path('app_pouvoir_index') }}" 
+           class="block bg-gradient-to-r from-yellow-500 to-yellow-600 text-background text-center py-3 px-6 rounded-lg shadow-lg hover:scale-105 transition transform">
+            Liste des Pouvoirs
+        </a>
+        {# <!-- Missions -->
+        <a href="{{ path('app_mission_index') }}" 
+           class="block bg-gradient-to-r from-red-500 to-red-600 text-white text-center py-3 px-6 rounded-lg shadow-lg hover:scale-105 transition transform">
+            Liste des Missions
+        </a> #}
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/Utilisateur/Documents/Exp-SuperHero/superhero/src/Controller/IndexController.php</code></li>
-        <li>Your template at <code>C:/Users/Utilisateur/Documents/Exp-SuperHero/superhero/templates/index/index.html.twig</code></li>
-    </ul>
+    <!-- Section additionnelle : Citation inspirante -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center max-w-lg mx-auto">
+        <blockquote class="italic text-2xl text-yellow-300">
+            "Un grand pouvoir implique de grandes responsabilités."
+        </blockquote>
+        <span class="text-sm text-gray-400 mt-2 block">- Benjamin Parker</span>
+    </div>
 </div>
 {% endblock %}

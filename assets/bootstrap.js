@@ -1,5 +1,9 @@
-import { startStimulusApp } from '@symfony/stimulus-bundle';
+// Import Stimulus
+// import { startStimulusApp } from '@symfony/stimulus-bundle';
 
-const app = startStimulusApp();
-// register any custom, 3rd party controllers here
+// Démarrer Stimulus
+// const app = startStimulusApp();
+import './styles/app.css'; // Par exemple, Tailwind ou d'autres styles
+
+// Enregistrer les contrôleurs Stimulus personnalisés ici
 // app.register('some_controller_name', SomeImportedController);

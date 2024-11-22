@@ -1,17 +1,33 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SuperHero{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('build/tailwind.css') }}">
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <!-- Navbar -->
+    <header class="bg-primary text-white py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SuperHero</h1>
+            <nav>
+                <a href="{{ path('app_index') }}" class="px-4 text-white hover:text-yellow-400">Accueil</a>
+                <a href="{{ path('app_super_hero_index') }}" class="px-4 text-white hover:text-yellow-400">Super Héros</a>
+                <a href="{{ path('app_pouvoir_index') }}" class="px-4 text-white hover:text-yellow-400">Pouvoirs</a>
+                {# <a href="{{ path('app_mission_index') }}" class="px-4 text-white hover:text-yellow-400">Missions</a> #}
+            </nav>
+        </div>
+    </header>
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
+    <!-- Main Content -->
+    <main class="container mx-auto py-8">
         {% block body %}{% endblock %}
-    </body>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-10">
+        <p>&copy; {{ "now"|date("Y") }} SuperHero. Tous droits réservés.</p>
+    </footer>
+</body>
 </html>

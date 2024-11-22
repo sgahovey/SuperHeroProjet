@@ -1,0 +1,24 @@
+{
+  "devDependencies": {
+    "@symfony/webpack-encore": "^5.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "postcss-loader": "^8.1.1",
+    "tailwindcss": "^3.4.15",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-notifier": "^1.15.0"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress",
+    "build:css": "tailwindcss -i ./assets/styles/tailwind.css -o ./public/build/tailwind.css"
+  },
+  "dependencies": {
+    "@symfony/stimulus-bridge": "^3.2.2"
+  }
+}

@@ -8,10 +8,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class IndexController extends AbstractController
 {
-    #[Route('/index', name: 'app_index')]
+    #[Route('/', name: 'app_index')]
     public function index(): Response
     {
         return $this->render('index/index.html.twig', [
+            'title' => 'Bienvenue sur l\'application de gestion des Super Héros',
             'controller_name' => 'IndexController',
         ]);
     }
