@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Entity;
+use App\Entity\MissionStatus;
+
+use Symfony\Component\Validator\Constraints as Assert; 
 
 use App\Repository\MissionRepository;
 use Doctrine\DBAL\Types\Types;
@@ -9,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: MissionRepository::class)]
 class Mission
 {
+    public function __construct()
+{
+    $this->statut = MissionStatus::PENDING; // Initialisation par défaut du STATUT
+}
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -20,11 +28,14 @@ class Mission
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $statut = null;
+    #[ORM\Column(enumType: MissionStatus::class)]
+    private MissionStatus $statut;
+
+    // #[ORM\Column(length: 255, nullable: true)]
+    // private ?string $statut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $debutLe = null;
+    private ?\DateTimeInterface $dateDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateFin = null;
@@ -32,8 +43,20 @@ class Mission
     #[ORM\Column(length: 255)]
     private ?string $lieu = null;
 
+
     #[ORM\Column]
+    #[Assert\NotNull(message: "Le niveau de danger est requis.")]
+    #[Assert\Range(
+        min: 1,
+        max: 5,
+        notInRangeMessage: "Le niveau de danger doit être compris entre {{ min }} et {{ max }}."
+    )]
     private ?int $niveauDanger = null;
+    
+
+
+    // #[ORM\Column]
+    // private ?int $niveauDanger = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -71,26 +94,39 @@ class Mission
         return $this;
     }
 
-    public function getStatut(): ?string
+
+    public function getStatut(): MissionStatus
+{
+    return $this->statut;
+}
+
+public function setStatut(MissionStatus $statut): self
+{
+    $this->statut = $statut;
+
+    return $this;
+}
+
+    // public function getStatut(): ?string
+    // {
+    //     return $this->statut;
+    // }
+
+    // public function setStatut(?string $statut): static
+    // {
+    //     $this->statut = $statut;
+
+    //     return $this;
+    // }
+
+    public function getDateDebut(): ?\DateTimeInterface
     {
-        return $this->statut;
+        return $this->dateDebut;
     }
 
-    public function setStatut(?string $statut): static
+    public function setDateDebut(\DateTimeInterface $dateDebut): static
     {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getDebutLe(): ?\DateTimeInterface
-    {
-        return $this->debutLe;
-    }
-
-    public function setDebutLe(\DateTimeInterface $debutLe): static
-    {
-        $this->debutLe = $debutLe;
+        $this->dateDebut = $dateDebut;
 
         return $this;
     }

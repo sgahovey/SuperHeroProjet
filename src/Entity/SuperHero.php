@@ -43,9 +43,16 @@ class SuperHero
     #[ORM\OneToMany(targetEntity: Equipe::class, mappedBy: 'chef')]
     private Collection $equipes;
 
+    /**
+     * @var Collection<int, Pouvoir>
+     */
+    #[ORM\ManyToMany(targetEntity: Pouvoir::class, inversedBy: 'superHeroes')]
+    private Collection $pouvoirs;
+
     public function __construct()
     {
         $this->equipes = new ArrayCollection();
+        $this->pouvoirs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,6 +170,30 @@ class SuperHero
                 $equipe->setChef(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pouvoir>
+     */
+    public function getPouvoirs(): Collection
+    {
+        return $this->pouvoirs;
+    }
+
+    public function addPouvoir(Pouvoir $pouvoir): static
+    {
+        if (!$this->pouvoirs->contains($pouvoir)) {
+            $this->pouvoirs->add($pouvoir);
+        }
+
+        return $this;
+    }
+
+    public function removePouvoir(Pouvoir $pouvoir): static
+    {
+        $this->pouvoirs->removeElement($pouvoir);
 
         return $this;
     }
