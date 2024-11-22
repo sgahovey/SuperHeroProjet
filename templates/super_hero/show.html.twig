@@ -1,9 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}SuperHero{% endblock %}
+{% block title %}Détails de {{ super_hero.nom }}{% endblock %}
 
 {% block body %}
-    <h1>SuperHero</h1>
+<div class="container mt-4">
+    <h1>Détails du Super Héros</h1>
 
     <table class="table">
         <tbody>
@@ -16,15 +17,15 @@
                 <td>{{ super_hero.nom }}</td>
             </tr>
             <tr>
-                <th>AlterEgo</th>
+                <th>Alter Ego</th>
                 <td>{{ super_hero.alterEgo }}</td>
             </tr>
             <tr>
-                <th>EstDisponible</th>
-                <td>{{ super_hero.estDisponible ? 'Yes' : 'No' }}</td>
+                <th>Disponible</th>
+                <td>{{ super_hero.estDisponible ? 'Oui' : 'Non' }}</td>
             </tr>
             <tr>
-                <th>NiveauEnergie</th>
+                <th>Niveau d'énergie</th>
                 <td>{{ super_hero.niveauEnergie }}</td>
             </tr>
             <tr>
@@ -32,19 +33,24 @@
                 <td>{{ super_hero.biographie }}</td>
             </tr>
             <tr>
-                <th>NomImage</th>
-                <td>{{ super_hero.nomImage }}</td>
+                <th>Image</th>
+                <td>
+                    {% if super_hero.nomImage %}
+                        <!-- Affiche l'image si elle existe -->
+                        <img src="{{ asset('uploads/superheroes/' ~ super_hero.nomImage) }}" alt="Image de {{ super_hero.nom }}" style="width: 200px; height: auto;">
+                    {% else %}
+                        Pas d'image
+                    {% endif %}
+                </td>
             </tr>
             <tr>
-                <th>CreeLe</th>
-                <td>{{ super_hero.creeLe ? super_hero.creeLe|date('Y-m-d H:i:s') : '' }}</td>
+                <th>Créé le</th>
+                <td>{{ super_hero.creeLe ? super_hero.creeLe|date('d/m/Y H:i') : '' }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_super_hero_index') }}">back to list</a>
-
-    <a href="{{ path('app_super_hero_edit', {'id': super_hero.id}) }}">edit</a>
-
-    {{ include('super_hero/_delete_form.html.twig') }}
+    <a href="{{ path('app_super_hero_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    <a href="{{ path('app_super_hero_edit', {'id': super_hero.id}) }}" class="btn btn-warning">Modifier</a>
+</div>
 {% endblock %}

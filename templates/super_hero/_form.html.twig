@@ -1,4 +1,24 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="mb-3">
+        {{ form_row(form.nom, { 'label': 'Nom du Super Héros' }) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.alterEgo, { 'label': 'Alter Ego' }) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.estDisponible, { 'label': 'Disponible' }) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.niveauEnergie, { 'label': 'Niveau d\'énergie' }) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.biographie, { 'label': 'Biographie' }) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.pouvoirs, { 'label': 'Pouvoirs associés' }) }}
+    </div>
+    <div class="mb-3">
+        {{ form_row(form.imageFile, { 'label': 'Photo du Super Héros' }) }}
+    </div>
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
 {{ form_end(form) }}

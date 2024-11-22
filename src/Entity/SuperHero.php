@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: SuperHeroRepository::class)]
+#[Vich\Uploadable] // Annotation pour VichUploader
 class SuperHero
 {
     #[ORM\Id]
@@ -32,7 +35,13 @@ class SuperHero
     private ?string $biographie = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $nomImage = null;
+    private ?string $nomImage = null; // Nom du fichier dans la base de données
+
+    #[Vich\UploadableField(mapping: 'super_hero_image', fileNameProperty: 'nomImage')]
+    private ?File $imageFile = null; // Fichier uploadé
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $dateImageModif = null; // Date de dernière modification de l'image
 
     #[ORM\Column]
     private ?\DateTimeImmutable $creeLe = null;
@@ -55,6 +64,8 @@ class SuperHero
         $this->pouvoirs = new ArrayCollection();
     }
 
+    // Getters et setters
+
     public function getId(): ?int
     {
         return $this->id;
@@ -65,7 +76,7 @@ class SuperHero
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(string $nom): self
     {
         $this->nom = $nom;
 
@@ -77,7 +88,7 @@ class SuperHero
         return $this->alterEgo;
     }
 
-    public function setAlterEgo(?string $alterEgo): static
+    public function setAlterEgo(?string $alterEgo): self
     {
         $this->alterEgo = $alterEgo;
 
@@ -89,7 +100,7 @@ class SuperHero
         return $this->estDisponible;
     }
 
-    public function setEstDisponible(bool $estDisponible): static
+    public function setEstDisponible(bool $estDisponible): self
     {
         $this->estDisponible = $estDisponible;
 
@@ -101,7 +112,7 @@ class SuperHero
         return $this->niveauEnergie;
     }
 
-    public function setNiveauEnergie(int $niveauEnergie): static
+    public function setNiveauEnergie(int $niveauEnergie): self
     {
         $this->niveauEnergie = $niveauEnergie;
 
@@ -113,7 +124,7 @@ class SuperHero
         return $this->biographie;
     }
 
-    public function setBiographie(string $biographie): static
+    public function setBiographie(?string $biographie): self
     {
         $this->biographie = $biographie;
 
@@ -125,9 +136,36 @@ class SuperHero
         return $this->nomImage;
     }
 
-    public function setNomImage(?string $nomImage): static
+    public function setNomImage(?string $nomImage): self
     {
         $this->nomImage = $nomImage;
+
+        return $this;
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile) {
+            // Met à jour la date de modification si une nouvelle image est uploadée
+            $this->dateImageModif = new \DateTimeImmutable();
+        }
+    }
+
+    public function getDateImageModif(): ?\DateTimeImmutable
+    {
+        return $this->dateImageModif;
+    }
+
+    public function setDateImageModif(?\DateTimeImmutable $dateImageModif): self
+    {
+        $this->dateImageModif = $dateImageModif;
 
         return $this;
     }
@@ -137,7 +175,7 @@ class SuperHero
         return $this->creeLe;
     }
 
-    public function setCreeLe(\DateTimeImmutable $creeLe): static
+    public function setCreeLe(\DateTimeImmutable $creeLe): self
     {
         $this->creeLe = $creeLe;
 
@@ -152,7 +190,7 @@ class SuperHero
         return $this->equipes;
     }
 
-    public function addEquipe(Equipe $equipe): static
+    public function addEquipe(Equipe $equipe): self
     {
         if (!$this->equipes->contains($equipe)) {
             $this->equipes->add($equipe);
@@ -162,7 +200,7 @@ class SuperHero
         return $this;
     }
 
-    public function removeEquipe(Equipe $equipe): static
+    public function removeEquipe(Equipe $equipe): self
     {
         if ($this->equipes->removeElement($equipe)) {
             // set the owning side to null (unless already changed)
@@ -182,7 +220,7 @@ class SuperHero
         return $this->pouvoirs;
     }
 
-    public function addPouvoir(Pouvoir $pouvoir): static
+    public function addPouvoir(Pouvoir $pouvoir): self
     {
         if (!$this->pouvoirs->contains($pouvoir)) {
             $this->pouvoirs->add($pouvoir);
@@ -191,7 +229,7 @@ class SuperHero
         return $this;
     }
 
-    public function removePouvoir(Pouvoir $pouvoir): static
+    public function removePouvoir(Pouvoir $pouvoir): self
     {
         $this->pouvoirs->removeElement($pouvoir);
 

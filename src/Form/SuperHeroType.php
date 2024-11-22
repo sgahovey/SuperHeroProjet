@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Pouvoir;
 use App\Entity\SuperHero;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,21 +14,29 @@ class SuperHeroType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Ajout des champs pour l'entité superhero
         $builder
             ->add('nom')
             ->add('alterEgo')
             ->add('estDisponible')
             ->add('niveauEnergie')
             ->add('biographie')
-            ->add('nomImage')
             ->add('creeLe', null, [
                 'widget' => 'single_text',
             ])
-            ->add('pouvoirs', EntityType::class, [
-                'class' => Pouvoir::class,
-                'choice_label' => 'id',
-                'multiple' => true,
+              // Champ pour associer les pouvoirs (relation ManyToMany avec l'entité Pouvoir)
+              ->add('pouvoirs', EntityType::class, [
+                'class' => Pouvoir::class, // Classe de l'entité associée
+                'choice_label' => 'id', // Ce qui sera affiché pour chaque choix (ici, l'ID du pouvoir)
+                'multiple' => true, // Permet de sélectionner plusieurs pouvoirs
             ])
+             // Ajout du champ pour l'upload d'image
+            ->add('imageFile', FileType::class, [
+                'label' => 'Télécharger une image', // Label pour le champ
+                'required' => false, // Champ facultatif
+                'mapped' => true, // Lien avec l'entité SuperHero
+                'attr' => ['accept' => 'image/*'], // Restreint aux fichiers image
+            ]);
         ;
     }
 
@@ -37,4 +46,6 @@ class SuperHeroType extends AbstractType
             'data_class' => SuperHero::class,
         ]);
     }
+
+    
 }
