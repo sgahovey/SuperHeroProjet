@@ -19,9 +19,11 @@ class Pouvoir
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom du pouvoir est requis.")]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "La description est requise.")]
     private ?string $description = null;
 
     #[ORM\Column]

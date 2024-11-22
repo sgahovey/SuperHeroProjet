@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Héros ayant le pouvoir {{ pouvoir.nom }}{% endblock %}
+
+{% block body %}
+    <h1>Héros ayant le pouvoir "{{ pouvoir.nom }}"</h1>
+
+    {% if super_heroes|length > 0 %}
+        <ul>
+            {% for hero in super_heroes %}
+                <li>
+                    <a href="{{ path('app_super_hero_show', {'id': hero.id}) }}">
+                        {{ hero.nom }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun héros n'a ce pouvoir pour le moment.</p>
+    {% endif %}
+
+    <a href="{{ path('app_pouvoir_index') }}" class="btn btn-secondary">Retour à la liste des pouvoirs</a>
+{% endblock %}

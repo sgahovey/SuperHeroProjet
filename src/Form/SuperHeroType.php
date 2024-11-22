@@ -27,8 +27,9 @@ class SuperHeroType extends AbstractType
               // Champ pour associer les pouvoirs (relation ManyToMany avec l'entité Pouvoir)
               ->add('pouvoirs', EntityType::class, [
                 'class' => Pouvoir::class, // Classe de l'entité associée
-                'choice_label' => 'id', // Ce qui sera affiché pour chaque choix (ici, l'ID du pouvoir)
+                'choice_label' => 'nom', // Ce qui sera affiché pour chaque choix (ici, le nom du pouvoir)
                 'multiple' => true, // Permet de sélectionner plusieurs pouvoirs
+                'expanded' => true, // Affiche une liste de cases à cocher
             ])
              // Ajout du champ pour l'upload d'image
             ->add('imageFile', FileType::class, [

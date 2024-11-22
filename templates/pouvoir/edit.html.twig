@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Pouvoir{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Modifier le Pouvoir</h1>
+
+        <!-- Formulaire d'édition -->
+        {{ include('pouvoir/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+        <!-- Lien pour revenir à la liste des pouvoirs -->
+        <a href="{{ path('app_pouvoir_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    </div>
+{% endblock %}

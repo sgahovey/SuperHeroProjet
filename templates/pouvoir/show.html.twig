@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pouvoir{% endblock %}
+
+{% block body %}
+    <h1>Détails du Pouvoir</h1>
+
+    <!-- Tableau affichant les informations du pouvoir -->
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ pouvoir.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ pouvoir.nom }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ pouvoir.description }}</td>
+            </tr>
+            <tr>
+                <th>Niveau</th>
+                <td>{{ pouvoir.niveau }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Lien pour revenir à la liste des pouvoirs -->
+    <a href="{{ path('app_pouvoir_index') }}" class="btn btn-secondary">Retour à la liste</a>
+
+{% endblock %}
