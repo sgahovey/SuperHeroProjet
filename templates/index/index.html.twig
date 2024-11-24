@@ -14,37 +14,49 @@
             Construisez votre propre équipe et partez en mission !
         </p>
         <div class="d-flex justify-content-center mt-4 gap-3">
-            <a href="{{ path('app_super_hero_index') }}" class="btn btn-marvel btn-lg">Explorer les Héros</a>
-            <a href="{{ path('app_pouvoir_index') }}" class="btn btn-warning btn-lg">Explorer les Pouvoirs</a>
+            <a href="{{ path('app_super_hero_index') }}" class="btn btn-danger btn-lg shadow">
+                <i class="fas fa-user-shield"></i> Explorer les Héros
+            </a>
+            <a href="{{ path('app_pouvoir_index') }}" class="btn btn-warning btn-lg shadow">
+                <i class="fas fa-bolt"></i> Explorer les Pouvoirs
+            </a>
         </div>
     </section>
 
     <!-- Fonctionnalités principales -->
     <section class="py-5">
         <div class="container">
-            <h2 class="text-center text-danger mb-5">Fonctionnalités principales</h2>
+            <h2 class="text-center text-danger mb-5 text-shadow">
+                Fonctionnalités principales
+            </h2>
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="card card-hover">
+                    <div class="card shadow card-hover border-0 bg-secondary">
                         <div class="card-body text-center">
                             <h3 class="card-title text-danger">Gestion des Héros</h3>
-                            <p>Créez, modifiez et explorez une liste complète de super-héros.</p>
+                            <p class="text-light">
+                                Créez, modifiez et explorez une liste complète de super-héros.
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card card-hover">
+                    <div class="card shadow card-hover border-0 bg-secondary">
                         <div class="card-body text-center">
                             <h3 class="card-title text-warning">Gestion des Pouvoirs</h3>
-                            <p>Ajoutez et attribuez des pouvoirs pour renforcer vos héros.</p>
+                            <p class="text-light">
+                                Ajoutez et attribuez des pouvoirs pour renforcer vos héros.
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card card-hover">
+                    <div class="card shadow card-hover border-0 bg-secondary">
                         <div class="card-body text-center">
                             <h3 class="card-title text-info">Missions Épiques</h3>
-                            <p>Organisez des missions captivantes pour défendre la planète.</p>
+                            <p class="text-light">
+                                Organisez des missions captivantes pour défendre la planète.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -53,8 +65,8 @@
     </section>
 
     <!-- Citation inspirante -->
-    <section class="py-5 bg-marvel-red text-center">
-        <blockquote class="blockquote text-light">
+    <section class="py-5 bg-danger text-center text-light">
+        <blockquote class="blockquote">
             <p class="mb-4 display-6 text-gold text-shadow-lg">
                 "Avec de grands pouvoirs viennent de grandes responsabilités."
             </p>

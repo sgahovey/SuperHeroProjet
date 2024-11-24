@@ -21,6 +21,7 @@ class SuperHero
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -37,18 +38,23 @@ class SuperHero
                     max: 100,
     notInRangeMessage: 'Le niveau d\'énergie doit être compris entre {{ min }} et {{ max }}.',
     )]
-private ?int $niveauEnergie = null;
-
-
-    // #[ORM\Column]
-    // private ?int $niveauEnergie = null;
+    private ?int $niveauEnergie = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "La biographie est obligatoire.")]
+    #[Assert\Length(
+        max: 1000,
+        maxMessage: "La biographie ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $biographie = null;
+
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nomImage = null; // Nom du fichier dans la base de données
 
+
+
+    
     #[Vich\UploadableField(mapping: 'super_hero_image', fileNameProperty: 'nomImage')]
     private ?File $imageFile = null; // Fichier uploadé
 
@@ -57,12 +63,12 @@ private ?int $niveauEnergie = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $creeLe = null;
-
     /**
      * @var Collection<int, Equipe>
      */
-    #[ORM\OneToMany(targetEntity: Equipe::class, mappedBy: 'chef')]
+    #[ORM\OneToMany(mappedBy: 'chef', targetEntity: Equipe::class)]
     private Collection $equipes;
+
 
     /**
      * @var Collection<int, Pouvoir>
@@ -74,6 +80,8 @@ private ?int $niveauEnergie = null;
     {
         $this->equipes = new ArrayCollection();
         $this->pouvoirs = new ArrayCollection();
+        $this->creeLe = new \DateTimeImmutable(); // Définit la date de création par défaut
+
     }
 
     // Getters et setters
@@ -214,15 +222,13 @@ private ?int $niveauEnergie = null;
 
     public function removeEquipe(Equipe $equipe): self
     {
-        if ($this->equipes->removeElement($equipe)) {
-            // set the owning side to null (unless already changed)
-            if ($equipe->getChef() === $this) {
-                $equipe->setChef(null);
-            }
+        if ($this->equipes->removeElement($equipe) && $equipe->getChef() === $this) {
+            $equipe->setChef(null);
         }
 
         return $this;
     }
+
 
     /**
      * @return Collection<int, Pouvoir>

@@ -3,36 +3,72 @@
 {% block title %}Modifier une Équipe{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1 class="mb-4">Modifier une Équipe</h1>
-
-    {{ form_start(form) }}
-    <div class="mb-3">
-        {{ form_label(form.nom) }}
-        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.nom) }}
+<div class="container mt-5">
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Modifier une Équipe</h1>
+        <p class="text-secondary">Apportez des modifications à l'équipe sélectionnée.</p>
     </div>
 
-    <div class="mb-3">
-        {{ form_label(form.chef) }}
-        {{ form_widget(form.chef, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.chef) }}
-    </div>
+    <!-- Formulaire -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Formulaire de modification</h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                    
+                    <!-- Nom -->
+                    <div class="mb-3">
+                        {{ form_label(form.nom, 'Nom de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
 
-    <div class="mb-3">
-        {{ form_label(form.membres) }}
-        {{ form_widget(form.membres, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.membres) }}
-    </div>
+                    <!-- Chef -->
+                    <div class="mb-3">
+                        {{ form_label(form.chef, 'Chef de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.chef, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.chef) }}
+                    </div>
 
-    <div class="mb-3">
-        {{ form_label(form.estActive) }}
-        {{ form_widget(form.estActive, {'attr': {'class': 'form-check-input'}}) }}
-        {{ form_errors(form.estActive) }}
-    </div>
+                    <!-- Membres -->
+                    <div class="mb-3">
+                        {{ form_label(form.membres, 'Membres de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        <div class="d-flex flex-wrap gap-3">
+                            {% for membre in form.membres %}
+                                <div class="form-check form-check-inline">
+                                    {{ form_widget(membre, {'attr': {'class': 'form-check-input'}}) }}
+                                    {{ form_label(membre, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ form_errors(form.membres) }}
+                    </div>
 
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-    <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Retour à la liste</a>
-    {{ form_end(form) }}
+                    <!-- État -->
+                    <div class="form-check mb-3">
+                        {{ form_widget(form.estActive, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.estActive, 'Équipe Active ?', {'label_attr': {'class': 'form-check-label'}}) }}
+                        {{ form_errors(form.estActive) }}
+                    </div>
+
+                    <!-- Boutons -->
+                    <button type="submit" class="btn btn-danger w-100 mt-3">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                    
+                    {{ form_end(form) }}
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_equipe_index') }}" class="btn btn-outline-danger">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

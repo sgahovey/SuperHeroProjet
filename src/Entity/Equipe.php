@@ -2,22 +2,28 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
-
-use App\Repository\EquipeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EquipeRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
 class Equipe
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de l'équipe est obligatoire.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le nom de l'équipe ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $nom = null;
 
     #[ORM\Column]
@@ -28,6 +34,7 @@ class Equipe
 
     #[ORM\ManyToOne(inversedBy: 'equipes')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "L'équipe doit avoir un chef.")]
     private ?SuperHero $chef = null;
 
 
@@ -101,19 +108,52 @@ private Collection $membres;
 
         return $this;
     }
+    
+    public function setChef(?SuperHero $chef): static
+{
+    $this->chef = $chef;
+    return $this;
+}
 
     public function getChef(): ?SuperHero
     {
         return $this->chef;
     }
     
-    
-    public function setChef(?SuperHero $chef): static
+    #[Assert\Callback]
+    public function validateChefEnergy(ExecutionContextInterface $context): void
     {
-        $this->chef = $chef;
-
-        return $this;
+        if ($this->chef && $this->chef->getNiveauEnergie() <= 80) {
+            $context->buildViolation('Le chef doit avoir un niveau d\'énergie supérieur à 80.')
+                ->atPath('chef')
+                ->addViolation();
+        }
     }
+    
+    #[Assert\Callback]
+    public function validateChefNotInMembers(ExecutionContextInterface $context): void
+    {
+        if ($this->chef && $this->membres->contains($this->chef)) {
+            $context->buildViolation('Le chef ne peut pas être un membre de l\'équipe.')
+                ->atPath('membres')
+                ->addViolation();
+        }
+    }
+
+    #[Assert\Callback]
+    public function validateMembersNotInOtherTeams(ExecutionContextInterface $context): void
+    {
+        foreach ($this->membres as $membre) {
+            foreach ($membre->getEquipes() as $equipe) {
+                if ($equipe !== $this) {
+                    $context->buildViolation(sprintf(
+                        'Le héros %s appartient déjà à une autre équipe.',
+                        $membre->getNom()
+                    ))
+                    ->atPath('membres')
+                    ->addViolation();
+                }
+            }}}
 
     /**
      * @return Collection<int, SuperHero>
@@ -124,13 +164,33 @@ private Collection $membres;
     }
 
     public function addMembre(SuperHero $membre): static
-    {
-        if (!$this->membres->contains($membre)) {
-            $this->membres->add($membre);
+{
+    // Vérifier si le membre est déjà chef
+    if ($this->chef && $this->chef === $membre) {
+        throw new \InvalidArgumentException("Le chef ne peut pas être un membre de l'équipe.");
+    }
+
+    if (!$this->membres->contains($membre)) {
+        // Vérifier si le membre est déjà dans une autre équipe
+        foreach ($membre->getEquipes() as $equipe) {
+            if ($equipe !== $this) {
+                throw new \InvalidArgumentException(sprintf("Le héros %s appartient déjà à une autre équipe.", $membre->getNom()));
+            }
         }
 
-        return $this;
+        $this->membres->add($membre);
     }
+
+    return $this;
+}
+    // public function addMembre(SuperHero $membre): static
+    // {
+    //     if (!$this->membres->contains($membre)) {
+    //         $this->membres->add($membre);
+    //     }
+
+    //     return $this;
+    // }
 
     public function removeMembre(SuperHero $membre): static
     {
