@@ -86,9 +86,14 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(form.pouvoirs, 'Pouvoirs Associés', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
-                            <div class="form-check">
-                                {{ form_widget(form.pouvoirs, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_label(form.pouvoirs, 'Pouvoirs associés', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                            <div class="form-check d-flex flex-wrap gap-3">
+                                {% for child in form.pouvoirs %}
+                                    <div class="form-check form-check-inline">
+                                        {{ form_widget(child, {'attr': {'class': 'form-check-input'}}) }}
+                                        {{ form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                    </div>
+                                {% endfor %}
                             </div>
                             {{ form_errors(form.pouvoirs) }}
                         </div>
