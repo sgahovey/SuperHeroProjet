@@ -3,13 +3,61 @@
 {% block title %}Modifier le Pouvoir{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1 class="mb-4">Modifier le Pouvoir</h1>
-
-        <!-- Formulaire d'édition -->
-        {{ include('pouvoir/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
-
-        <!-- Lien pour revenir à la liste des pouvoirs -->
-        <a href="{{ path('app_pouvoir_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+<div class="container mt-5">
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Modifier le Pouvoir</h1>
+        <p class="text-secondary">Apportez des modifications au pouvoir sélectionné.</p>
     </div>
+
+    <!-- Contenu principal -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Formulaire -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Formulaire d'édition</h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                    <!-- Nom -->
+                    <div class="mb-3">
+                        {{ form_label(form.nom, 'Nom du Pouvoir', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <!-- Niveau -->
+                    <div class="mb-3">
+                        {{ form_label(form.niveau, 'Niveau', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.niveau, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.niveau) }}
+                    </div>
+
+                    <!-- Bouton Mettre à jour -->
+                    <button type="submit" class="btn btn-danger w-100 mt-3">
+                        <i class="fas fa-save"></i> Mettre à jour
+                    </button>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Bouton Retour -->
+            <div class="text-center mt-4">
+                <a href="{{ path('app_pouvoir_index') }}" class="btn btn-outline-danger">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

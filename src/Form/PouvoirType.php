@@ -14,15 +14,25 @@ class PouvoirType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom')
-            ->add('description')
-            ->add('niveau')
+            ->add('nom', null, [
+                'label' => 'Nom du Pouvoir',
+                'attr' => ['class' => 'form-control'],
+            ])
+            ->add('description', null, [
+                'label' => 'Description',
+                'attr' => ['class' => 'form-control'],
+            ])
+            ->add('niveau', null, [
+                'label' => 'Niveau',
+                'attr' => ['class' => 'form-control'],
+            ])
             ->add('superHeroes', EntityType::class, [
                 'class' => SuperHero::class,
-                'choice_label' => 'nom', // Affiche le nom des Super Héros dans le champ
-                'multiple' => true, // Permet la sélection multiple
-                'required' => false, // Rend le champ facultatif
-                'expanded' => false, // Utilise un select dropdown
+                'choice_label' => 'nom', // Affiche le nom des super-héros
+                'multiple' => true, // Autorise plusieurs choix
+                'expanded' => true, // Affiche les choix sous forme de cases à cocher
+                'label' => 'Super Héros associés :',
+                'attr' => ['class' => 'form-check-inline'], // Ajout de classe pour styliser les checkboxes
             ]);
     }
 

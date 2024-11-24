@@ -3,9 +3,79 @@
 {% block title %}Créer un Super Héros{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1 class="mb-4">Créer un Super Héros</h1>
-        {{ include('super_hero/_form.html.twig') }}
-        <a href="{{ path('app_super_hero_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+<div class="container mt-5">
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Créer un Super Héros</h1>
+        <p class="text-secondary">Ajoutez un nouveau héros à votre univers avec ses compétences et ses super-pouvoirs uniques.</p>
     </div>
+
+    <!-- Contenu principal -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Formulaire -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Formulaire de création</h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+                    <div class="mb-3">
+                        {{ form_label(form.nom, 'Nom du Super Héros', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.alterEgo, 'Alter Ego', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.alterEgo, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.alterEgo) }}
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ form_widget(form.estDisponible, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.estDisponible, 'Disponible ?', {'label_attr': {'class': 'form-check-label'}}) }}
+                        {{ form_errors(form.estDisponible) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.niveauEnergie, 'Niveau d\'énergie (0 à 100)', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.niveauEnergie, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.niveauEnergie) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.biographie, 'Biographie', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.biographie, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                        {{ form_errors(form.biographie) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.pouvoirs, 'Pouvoirs associés', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        <div class="form-check">
+                            {{ form_widget(form.pouvoirs, {'attr': {'class': 'form-check-input'}}) }}
+                            {{ form_errors(form.pouvoirs) }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.imageFile, 'Photo du Super Héros', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.imageFile, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.imageFile) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.creeLe, 'Créé le', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.creeLe, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.creeLe) }}
+                    </div>
+                    <!-- Bouton Créer -->
+                    <button type="submit" class="btn btn-danger w-100 mt-3">
+                        <i class="fas fa-save"></i> Créer
+                    </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            <!-- Bouton retour -->
+            <div class="mt-4 text-center">
+                <a href="{{ path('app_super_hero_index') }}" class="btn btn-outline-danger">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

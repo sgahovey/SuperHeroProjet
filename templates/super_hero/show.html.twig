@@ -3,53 +3,88 @@
 {% block title %}Détails de {{ super_hero.nom }}{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1>Détails du Super Héros</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Titre principal -->
+        <div class="col-12 text-center mb-4">
+            <h1 class="text-danger fw-bold">Détails du Super Héros</h1>
+            <p class="text-secondary">Découvrez toutes les informations sur votre super-héros préféré.</p>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ super_hero.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ super_hero.nom }}</td>
-            </tr>
-            <tr>
-                <th>Alter Ego</th>
-                <td>{{ super_hero.alterEgo }}</td>
-            </tr>
-            <tr>
-                <th>Disponible</th>
-                <td>{{ super_hero.estDisponible ? 'Oui' : 'Non' }}</td>
-            </tr>
-            <tr>
-                <th>Niveau d'énergie</th>
-                <td>{{ super_hero.niveauEnergie }}</td>
-            </tr>
-            <tr>
-                <th>Biographie</th>
-                <td>{{ super_hero.biographie }}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td>
-                    {% if super_hero.nomImage %}
-                        <!-- Affiche l'image si elle existe -->
-                        <img src="{{ asset('uploads/superheroes/' ~ super_hero.nomImage) }}" alt="Image de {{ super_hero.nom }}" style="width: 200px; height: auto;">
-                    {% else %}
-                        Pas d'image
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Créé le</th>
-                <td>{{ super_hero.creeLe ? super_hero.creeLe|date('d/m/Y H:i') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- Image du Super-Héros -->
+        <div class="col-md-4 text-center">
+            {% if super_hero.nomImage %}
+                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                    <img src="{{ asset('uploads/superheroes/' ~ super_hero.nomImage) }}" alt="Image de {{ super_hero.nom }}" class="img-fluid rounded shadow-lg" style="border: 3px solid #dc3545; cursor: pointer;">
+                </a>
+            {% else %}
+                <div class="alert alert-warning">Pas d'image disponible</div>
+            {% endif %}
+        </div>
 
-    <a href="{{ path('app_super_hero_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        <!-- Informations générales -->
+        <div class="col-md-8">
+            <div class="card bg-light shadow">
+                <div class="card-header bg-danger text-white text-center">
+                    <h2>{{ super_hero.nom }}</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Alter Ego : </strong>{{ super_hero.alterEgo ?: 'Non défini' }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Disponible : </strong>{{ super_hero.estDisponible ? 'Oui' : 'Non' }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Niveau d'Énergie : </strong>{{ super_hero.niveauEnergie }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Biographie : </strong>{{ super_hero.biographie }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Créé le : </strong>{{ super_hero.creeLe ? super_hero.creeLe|date('d/m/Y H:i') : 'Non défini' }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Pouvoirs Associés :</strong>
+                            {% if super_hero.pouvoirs|length > 0 %}
+                                <ul class="mt-2">
+                                    {% for pouvoir in super_hero.pouvoirs %}
+                                        <li class="text-success"><i class="bi bi-lightning-fill"></i> {{ pouvoir.nom }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <span class="text-muted">Aucun pouvoir associé.</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton de retour -->
+    <div class="text-center mt-5">
+        <a href="{{ path('app_super_hero_index') }}" class="btn btn-danger btn-lg">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
+
+<!-- Modal pour afficher l'image en grand -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-0">
+            <h5 class="modal-title" id="imageModalLabel" style="color: #FFD700;">
+                    Image de {{ super_hero.nom }}
+            </h5> 
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="{{ asset('uploads/superheroes/' ~ super_hero.nomImage) }}" alt="{{ super_hero.nom }}" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

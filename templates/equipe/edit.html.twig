@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une Équipe{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Modifier une Équipe</h1>
+
+    {{ form_start(form) }}
+    <div class="mb-3">
+        {{ form_label(form.nom) }}
+        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.nom) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.chef) }}
+        {{ form_widget(form.chef, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.chef) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.membres) }}
+        {{ form_widget(form.membres, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.membres) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.estActive) }}
+        {{ form_widget(form.estActive, {'attr': {'class': 'form-check-input'}}) }}
+        {{ form_errors(form.estActive) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

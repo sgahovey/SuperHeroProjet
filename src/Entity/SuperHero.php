@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\SuperHeroRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,8 +29,19 @@ class SuperHero
     #[ORM\Column]
     private ?bool $estDisponible = null;
 
+
     #[ORM\Column]
-    private ?int $niveauEnergie = null;
+    #[Assert\NotNull(message: 'Le niveau d\'énergie est obligatoire.')]
+    #[Assert\Range(
+                    min: 0,
+                    max: 100,
+    notInRangeMessage: 'Le niveau d\'énergie doit être compris entre {{ min }} et {{ max }}.',
+    )]
+private ?int $niveauEnergie = null;
+
+
+    // #[ORM\Column]
+    // private ?int $niveauEnergie = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $biographie = null;

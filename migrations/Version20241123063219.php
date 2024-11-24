@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241122082616 extends AbstractMigration
+final class Version20241123063219 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,7 +24,7 @@ final class Version20241122082616 extends AbstractMigration
         $this->addSql('CREATE TABLE equipe_super_hero (equipe_id INT NOT NULL, super_hero_id INT NOT NULL, INDEX IDX_970E3D1E6D861B89 (equipe_id), INDEX IDX_970E3D1EB62BE361 (super_hero_id), PRIMARY KEY(equipe_id, super_hero_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE mission (id INT AUTO_INCREMENT NOT NULL, equipe_assignee_id INT NOT NULL, titre VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, statut VARCHAR(255) NOT NULL, date_debut DATETIME NOT NULL, date_fin DATETIME NOT NULL, lieu VARCHAR(255) NOT NULL, niveau_danger INT NOT NULL, INDEX IDX_9067F23C937C8CB0 (equipe_assignee_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE pouvoir (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, niveau INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE super_hero (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, alter_ego VARCHAR(255) DEFAULT NULL, est_disponible TINYINT(1) NOT NULL, niveau_energie INT NOT NULL, biographie LONGTEXT NOT NULL, nom_image VARCHAR(255) DEFAULT NULL, cree_le DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE super_hero (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, alter_ego VARCHAR(255) DEFAULT NULL, est_disponible TINYINT(1) NOT NULL, niveau_energie INT NOT NULL, biographie LONGTEXT NOT NULL, nom_image VARCHAR(255) DEFAULT NULL, date_image_modif DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', cree_le DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE super_hero_pouvoir (super_hero_id INT NOT NULL, pouvoir_id INT NOT NULL, INDEX IDX_8E6512CBB62BE361 (super_hero_id), INDEX IDX_8E6512CBC8A705F8 (pouvoir_id), PRIMARY KEY(super_hero_id, pouvoir_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', available_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', delivered_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_75EA56E0FB7336F0 (queue_name), INDEX IDX_75EA56E0E3BD61CE (available_at), INDEX IDX_75EA56E016BA31DB (delivered_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE equipe ADD CONSTRAINT FK_2449BA15150A48F1 FOREIGN KEY (chef_id) REFERENCES super_hero (id)');

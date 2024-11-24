@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Équipes{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des Équipes</h1>
+
+    {% if equipes|length > 0 %}
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Chef</th>
+                    <th>Membres</th>
+                    <th>État</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for equipe in equipes %}
+                <tr>
+                    <td>{{ equipe.id }}</td>
+                    <td>{{ equipe.nom }}</td>
+                    <td>{{ equipe.chef.nom }}</td>
+                    <td>
+                        {% for membre in equipe.membres %}
+                            {{ membre.nom }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ equipe.estActive ? 'Active' : 'Inactive' }}</td>
+                    <td>
+                        <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                        <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <form method="post" action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette équipe ?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning">Aucune équipe trouvée.</div>
+    {% endif %}
+    <a href="{{ path('app_equipe_new') }}" class="btn btn-primary mt-3">Créer une nouvelle Équipe</a>
+    {% if equipe.membres is defined and equipe.membres is iterable %}
+    {% for membre in equipe.membres %}
+        {{ membre.nom }}
+    {% endfor %}
+{% else %}
+    <p>Aucun membre trouvé.</p>
+{% endif %}
+
+</div>
+{% endblock %}

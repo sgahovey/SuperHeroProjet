@@ -1,33 +1,87 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Pouvoir{% endblock %}
+{% block title %}Détails du Pouvoir{% endblock %}
 
 {% block body %}
-    <h1>Détails du Pouvoir</h1>
+<div class="container mt-5">
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Détails du Pouvoir</h1>
+        <p class="text-secondary">Découvrez toutes les informations sur le pouvoir sélectionné et les héros associés.</p>
+    </div>
 
-    <!-- Tableau affichant les informations du pouvoir -->
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ pouvoir.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ pouvoir.nom }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ pouvoir.description }}</td>
-            </tr>
-            <tr>
-                <th>Niveau</th>
-                <td>{{ pouvoir.niveau }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Contenu principal -->
+    <div class="row justify-content-center">
+        <!-- Détails du Pouvoir -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bolt"></i> {{ pouvoir.nom }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th class="text-danger">ID :</th>
+                                <td class="text-secondary">{{ pouvoir.id }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">Nom :</th>
+                                <td class="text-danger fw-bold">{{ pouvoir.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">Description :</th>
+                                <td class="text-primary">{{ pouvoir.description }}</td>
+                            </tr>
+                            <tr>
+                                <th class="text-danger">Niveau :</th>
+                                <td class="text-success fw-bold">{{ pouvoir.niveau }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <!-- Lien pour revenir à la liste des pouvoirs -->
-    <a href="{{ path('app_pouvoir_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        <!-- Héros Associés -->
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-users"></i> Héros Associés
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if pouvoir.superHeroes|length > 0 %}
+                        <ul class="list-group">
+                            {% for hero in pouvoir.superHeroes %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <i class="fas fa-user-shield text-danger"></i> 
+                                        <a href="{{ path('app_super_hero_show', {id: hero.id}) }}" class="text-decoration-none text-danger fw-bold">
+                                            {{ hero.nom }}
+                                        </a>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-warning text-center">
+                            Aucun héros n'est associé à ce pouvoir.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Bouton Retour -->
+    <div class="text-center mt-4">
+        <a href="{{ path('app_pouvoir_index') }}" class="btn btn-danger btn-lg">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
 {% endblock %}

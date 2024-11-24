@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 use App\Repository\EquipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,11 +30,21 @@ class Equipe
     #[ORM\JoinColumn(nullable: false)]
     private ?SuperHero $chef = null;
 
-    /**
-     * @var Collection<int, SuperHero>
-     */
+
+    // Pas de doublons dans les membres
+    #[Assert\Count(
+     min: 2,
+        max: 5,
+    minMessage: 'Une équipe doit avoir au moins 2 membres.',
+    maxMessage: 'Une équipe ne peut pas avoir plus de 5 membres.'
+    )]
     #[ORM\ManyToMany(targetEntity: SuperHero::class)]
-    private Collection $membres;
+private Collection $membres;
+    // /**
+    //  * @var Collection<int, SuperHero>
+    //  */
+    // #[ORM\ManyToMany(targetEntity: SuperHero::class)]
+    // private Collection $membres;
 
     /**
      * @var Collection<int, Mission>
@@ -94,7 +106,8 @@ class Equipe
     {
         return $this->chef;
     }
-
+    
+    
     public function setChef(?SuperHero $chef): static
     {
         $this->chef = $chef;

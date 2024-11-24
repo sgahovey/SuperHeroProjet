@@ -26,12 +26,13 @@ class Pouvoir
     #[Assert\NotBlank(message: "La description est requise.")]
     private ?string $description = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: "Le niveau est requis.")]
+    #[ORM\Column(type: 'integer')]
+    #[Assert\NotBlank(message: 'Le niveau est obligatoire.')]
     #[Assert\Range(
-                    min: 1,
-                    max: 5,
-    notInRangeMessage: "Le niveau doit être compris entre {{ min }} et {{ max }}.")]
+        min: 1,
+        max: 5,
+        notInRangeMessage: 'Le niveau doit être compris entre {{ min }} et {{ max }}.',
+    )]
     private ?int $niveau = null;
 
     // #[ORM\Column]

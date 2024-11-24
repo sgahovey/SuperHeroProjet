@@ -51,22 +51,31 @@ final class PouvoirController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_pouvoir_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Pouvoir $pouvoir, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(PouvoirType::class, $pouvoir);
-        $form->handleRequest($request);
+public function edit(Request $request, Pouvoir $pouvoir, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(PouvoirType::class, $pouvoir);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_pouvoir_index', [], Response::HTTP_SEE_OTHER);
+    if ($form->isSubmitted()) {
+        if ($form->isValid()) {
+            try {
+                $entityManager->flush();
+                $this->addFlash('success', 'Le pouvoir a été mis à jour avec succès.');
+                return $this->redirectToRoute('app_pouvoir_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur est survenue lors de la mise à jour : ' . $e->getMessage());
+            }
+        } else {
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
         }
-
-        return $this->render('pouvoir/edit.html.twig', [
-            'pouvoir' => $pouvoir,
-            'form' => $form,
-        ]);
     }
+
+    return $this->render('pouvoir/edit.html.twig', [
+        'pouvoir' => $pouvoir,
+        'form' => $form,
+    ]);
+}
+
 
             #[Route('/{id}/heros', name: 'app_pouvoir_heros', methods: ['GET'])]
         public function heros(Pouvoir $pouvoir): Response
@@ -88,4 +97,5 @@ final class PouvoirController extends AbstractController
 
         return $this->redirectToRoute('app_pouvoir_index', [], Response::HTTP_SEE_OTHER);
     }
+    
 }
