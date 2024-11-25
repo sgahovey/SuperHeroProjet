@@ -60,6 +60,19 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             ]);
         }
 
+        // Rendre les super-héros indisponibles
+        $chef = $equipe->getChef();
+        if ($chef) {
+            $chef->setEstDisponible(false); // Rendre le chef indisponible
+            $entityManager->persist($chef);
+        }
+
+        foreach ($equipe->getMembres() as $membre) {
+            $membre->setEstDisponible(false); // Rendre chaque membre indisponible
+            $entityManager->persist($membre);
+        }
+
+        
         $entityManager->persist($equipe);
         $entityManager->flush();
 

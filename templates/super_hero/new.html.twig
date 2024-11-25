@@ -30,11 +30,6 @@
                         {{ form_widget(form.alterEgo, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.alterEgo) }}
                     </div>
-                    <div class="form-check mb-3">
-                        {{ form_widget(form.estDisponible, {'attr': {'class': 'form-check-input'}}) }}
-                        {{ form_label(form.estDisponible, 'Disponible ?', {'label_attr': {'class': 'form-check-label'}}) }}
-                        {{ form_errors(form.estDisponible) }}
-                    </div>
                     <div class="mb-3">
                         {{ form_label(form.niveauEnergie, 'Niveau d\'énergie (0 à 100)', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.niveauEnergie, {'attr': {'class': 'form-control'}}) }}

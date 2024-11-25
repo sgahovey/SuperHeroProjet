@@ -27,6 +27,7 @@ final class SuperHeroController extends AbstractController
     {
         // Créer un  SuperHero
         $superHero = new SuperHero();
+        $superHero->setEstDisponible(true); // Super Hero mis automatiquement disponible
         $form = $this->createForm(SuperHeroType::class, $superHero);
         $form->handleRequest($request);
 
