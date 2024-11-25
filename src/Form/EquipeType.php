@@ -51,16 +51,23 @@ class EquipeType extends AbstractType
                 'label' => 'Membres de l\'équipe (super-héros disponibles)',
             ])
             
+            
             ->add('missionActuelle', EntityType::class, [
                 'class' => Mission::class,
                 'choice_label' => 'id',
             ]);
+            if ($options['include_active']) { // Ajouter "estActive" seulement si nécessaire
+                $builder->add('estActive');
+            }
+    
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Equipe::class,
+            'include_active' => false, // Par défaut, ne pas inclure "estActive"
+
         ]);
     }
 }

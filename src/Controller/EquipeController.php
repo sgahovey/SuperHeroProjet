@@ -27,6 +27,7 @@ final class EquipeController extends AbstractController
 public function new(Request $request, EntityManagerInterface $entityManager): Response
 {
     $equipe = new Equipe();
+    $equipe->setEstActive(true); // Super Hero mis automatiquement disponible
     $form = $this->createForm(EquipeType::class, $equipe);
     $form->handleRequest($request);
 
@@ -72,7 +73,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             $entityManager->persist($membre);
         }
 
-        
+
         $entityManager->persist($equipe);
         $entityManager->flush();
 
@@ -100,7 +101,9 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     #[Route('/{id}/edit', name: 'app_equipe_edit', methods: ['GET', 'POST'])]
 public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
 {
-    $form = $this->createForm(EquipeType::class, $equipe);
+    $form = $this->createForm(EquipeType::class, $equipe, [
+        'include_active' => true, // Inclure "estActive" dans le formulaire
+    ]);
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
