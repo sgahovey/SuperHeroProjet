@@ -66,6 +66,7 @@ private Collection $membres;
     {
         $this->membres = new ArrayCollection();
         $this->missions = new ArrayCollection();
+        $this->creeLe = new \DateTimeImmutable(); // Définit la date de création par défaut
     }
 
     public function getId(): ?int
