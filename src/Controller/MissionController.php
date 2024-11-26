@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Mission;
 use App\Form\MissionType;
+use App\Repository\EquipeRepository;
 use App\Repository\MissionRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/mission')]
 final class MissionController extends AbstractController
@@ -28,19 +30,53 @@ final class MissionController extends AbstractController
         $mission = new Mission();
         $form = $this->createForm(MissionType::class, $mission);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($mission);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
+            // Validation : l'équipe assignée doit être active
+            $equipeAssignee = $mission->getEquipeAssignee();
+            if (!$equipeAssignee->isEstActive()) {
+                $this->addFlash('error', "L'équipe assignée doit être active.");
+                return $this->render('mission/new.html.twig', [
+                    'form' => $form,
+                    'mission' => $mission,
+                ]);
+            }
+    
+            // Validation : vérifier que les pouvoirs requis existent
+            if ($mission->getPouvoirsRequis()->isEmpty()) {
+                $this->addFlash('error', "Vous devez sélectionner au moins un pouvoir requis pour cette mission.");
+                return $this->render('mission/new.html.twig', [
+                    'form' => $form,
+                    'mission' => $mission,
+                ]);
+            }
+    
+            // Validation : la date de début doit être antérieure à la date de fin
+            if ($mission->getDateDebut() >= $mission->getDateFin()) {
+                $this->addFlash('error', "La date de début doit être antérieure à la date de fin.");
+                return $this->render('mission/new.html.twig', [
+                    'form' => $form,
+                    'mission' => $mission,
+                ]);
+            }
+    
+            // Persist the new mission
+            try {
+                $entityManager->persist($mission);
+                $entityManager->flush();
+                $this->addFlash('success', 'La mission a été créée avec succès.');
+                return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur est survenue lors de la création de la mission : ' . $e->getMessage());
+            }
         }
-
+    
         return $this->render('mission/new.html.twig', [
             'mission' => $mission,
             'form' => $form,
         ]);
     }
+    
 
     #[Route('/{id}', name: 'app_mission_show', methods: ['GET'])]
     public function show(Mission $mission): Response
@@ -71,11 +107,17 @@ final class MissionController extends AbstractController
     #[Route('/{id}', name: 'app_mission_delete', methods: ['POST'])]
     public function delete(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$mission->getId(), $request->getPayload()->getString('_token'))) {
+        // Vérifier la validité du token CSRF
+        if ($this->isCsrfTokenValid('delete'.$mission->getId(), $request->request->get('_token'))) {
             $entityManager->remove($mission);
             $entityManager->flush();
+            $this->addFlash('success', 'Mission supprimée avec succès.');
+        } else {
+            $this->addFlash('error', 'Échec de la suppression de la mission. Token CSRF invalide.');
         }
-
+    
         return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    
 }

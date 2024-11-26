@@ -27,27 +27,6 @@
                         {{ form_errors(form.nom) }}
                     </div>
 
-                    <!-- Chef -->
-                    <div class="mb-3">
-                        {{ form_label(form.chef, 'Chef de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
-                        {{ form_widget(form.chef, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(form.chef) }}
-                    </div>
-
-                    <!-- Membres -->
-                    <div class="mb-3">
-                        {{ form_label(form.membres, 'Membres de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
-                        <div class="d-flex flex-wrap gap-3">
-                            {% for membre in form.membres %}
-                                <div class="form-check form-check-inline">
-                                    {{ form_widget(membre, {'attr': {'class': 'form-check-input'}}) }}
-                                    {{ form_label(membre, null, {'label_attr': {'class': 'form-check-label'}}) }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                        {{ form_errors(form.membres) }}
-                    </div>
-
                     <!-- État -->
                     <div class="form-check mb-3">
                         {{ form_widget(form.estActive, {'attr': {'class': 'form-check-input'}}) }}
