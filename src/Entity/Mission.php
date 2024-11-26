@@ -3,11 +3,13 @@
 namespace App\Entity;
 use App\Entity\MissionStatus;
 
-use Symfony\Component\Validator\Constraints as Assert; 
-
-use App\Repository\MissionRepository;
 use Doctrine\DBAL\Types\Types;
+
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\MissionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert; 
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: MissionRepository::class)]
 class Mission
@@ -15,6 +17,7 @@ class Mission
     public function __construct()
 {
     $this->statut = MissionStatus::PENDING; // Initialisation par défaut du STATUT
+    $this->pouvoirsRequis = new ArrayCollection();
 }
 
     #[ORM\Id]
@@ -37,11 +40,17 @@ class Mission
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateDebut = null;
 
+    #[Assert\GreaterThan(propertyPath: 'dateDebut', message: "La date de fin doit être postérieure à la date de début.")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateFin = null;
 
+
     #[ORM\Column(length: 255)]
     private ?string $lieu = null;
+
+    #[ORM\ManyToMany(targetEntity: Pouvoir::class)]
+    #[ORM\JoinTable(name: 'mission_pouvoirs')]
+    private Collection $pouvoirsRequis;
 
 
     #[ORM\Column]
@@ -106,6 +115,30 @@ public function setStatut(MissionStatus $statut): self
 
     return $this;
 }
+
+    /**
+     * @return Collection<int, Pouvoir>
+     */
+    public function getPouvoirsRequis(): Collection
+    {
+        return $this->pouvoirsRequis;
+    }
+
+    public function addPouvoirRequis(Pouvoir $pouvoir): self
+    {
+        if (!$this->pouvoirsRequis->contains($pouvoir)) {
+            $this->pouvoirsRequis->add($pouvoir);
+        }
+
+        return $this;
+    }
+
+    public function removePouvoirRequis(Pouvoir $pouvoir): self
+    {
+        $this->pouvoirsRequis->removeElement($pouvoir);
+
+        return $this;
+    }
 
     // public function getStatut(): ?string
     // {
