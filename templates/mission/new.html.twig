@@ -10,6 +10,61 @@
     <button type="submit" class="btn btn-success mt-3">Créer</button>
     <a href="{{ path('app_mission_index') }}" class="btn btn-secondary mt-3">Retour</a>
     {{ form_end(form) }}
-    
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const pouvoirsSelect = document.querySelector('#mission_pouvoirsRequis'); // ID du champ pouvoirs requis
+    const equipeSelect = document.querySelector('#mission_equipeAssignee'); // ID du champ équipe assignée
+
+    // Vérifiez si les éléments existent dans le DOM avant d'ajouter des événements
+    if (pouvoirsSelect && equipeSelect) {
+        pouvoirsSelect.addEventListener('change', () => {
+            // Récupérer les IDs des pouvoirs sélectionnés
+            const pouvoirs = Array.from(pouvoirsSelect.selectedOptions).map(option => option.value);
+
+            // Envoyer une requête AJAX pour récupérer les équipes compatibles
+            fetch('/api/equipes-compatibles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pouvoirs }), // Envoie les IDs des pouvoirs
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Vider le champ des équipes avant de le remplir
+                equipeSelect.innerHTML = '';
+
+                // Si des équipes compatibles existent, créer un groupe spécifique
+                if (data.equipesCompatibles.length > 0) {
+                    const groupCompatibles = document.createElement('optgroup');
+                    groupCompatibles.label = 'Équipes compatibles';
+                    data.equipesCompatibles.forEach(equipe => {
+                        const option = document.createElement('option');
+                        option.value = equipe.id;
+                        option.textContent = equipe.nom;
+                        groupCompatibles.appendChild(option);
+                    });
+                    equipeSelect.appendChild(groupCompatibles);
+                }
+
+                // Ajouter toutes les autres équipes (autres choix possibles)
+                if (data.equipesIncompatibles.length > 0) {
+                    const groupIncompatibles = document.createElement('optgroup');
+                    groupIncompatibles.label = 'Autres équipes';
+                    data.equipesIncompatibles.forEach(equipe => {
+                        const option = document.createElement('option');
+                        option.value = equipe.id;
+                        option.textContent = equipe.nom;
+                        groupIncompatibles.appendChild(option);
+                    });
+                    equipeSelect.appendChild(groupIncompatibles);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des équipes compatibles :', error);
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

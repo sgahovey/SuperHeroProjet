@@ -119,5 +119,31 @@ final class MissionController extends AbstractController
         return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    
+    #[Route('/api/equipes-compatibles', name: 'api_equipes_compatibles', methods: ['POST'])]
+public function equipesCompatibles(Request $request, EquipeRepository $equipeRepository): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
+    $pouvoirsIds = $data['pouvoirs'] ?? [];
+
+    // Récupérer les équipes ayant des membres ou un chef avec les pouvoirs requis
+    $equipes = $equipeRepository->createQueryBuilder('e')
+        ->leftJoin('e.membres', 'm')
+        ->leftJoin('m.pouvoirs', 'p')
+        ->leftJoin('e.chef', 'c')
+        ->leftJoin('c.pouvoirs', 'cp')
+        ->where('p.id IN (:pouvoirs) OR cp.id IN (:pouvoirs)')
+        ->andWhere('e.estActive = true') // Équipes actives uniquement
+        ->setParameter('pouvoirs', $pouvoirsIds)
+        ->getQuery()
+        ->getResult();
+
+    // Préparer la réponse JSON
+    $response = array_map(fn($equipe) => [
+        'id' => $equipe->getId(),
+        'nom' => $equipe->getNom(),
+    ], $equipes);
+
+    return new JsonResponse(['equipes' => $response]);
+}
+
 }

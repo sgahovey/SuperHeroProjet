@@ -60,14 +60,15 @@ class MissionType extends AbstractType
             ])            
             ->add('equipeAssignee', EntityType::class, [
                 'class' => Equipe::class,
-                'choice_label' => 'nom',
-                'placeholder' => 'Veuillez sélectionner une équipe',
-                'query_builder' => function (EntityRepository $repository) {
+                'choice_label' => 'nom', // Afficher le nom de l'équipe
+                'placeholder' => 'Sélectionnez une équipe',
+                'query_builder' => function (EntityRepository $repository) use ($options) {
+                    // Optionnel : filtrer les équipes en fonction de leur état actif ou des pouvoirs requis
                     return $repository->createQueryBuilder('e')
-                        ->where('e.estActive = :active')
-                        ->setParameter('active', true)
-                        ->orderBy('e.nom', 'ASC'); // Facultatif : trier par nom
-                },]);
+                        ->where('e.estActive = true') // Par exemple, uniquement les équipes actives
+                        ->orderBy('e.nom', 'ASC');
+                },
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
