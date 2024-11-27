@@ -28,7 +28,8 @@ final class MissionController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $mission = new Mission();
-    
+        $mission->setDateDebut(new \DateTime()); // Définit la date actuelle par défaut
+
         // Création du formulaire
         $form = $this->createForm(MissionType::class, $mission);
     
