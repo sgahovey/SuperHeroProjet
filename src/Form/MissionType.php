@@ -55,9 +55,11 @@ class MissionType extends AbstractType
             ->add('pouvoirsRequis', EntityType::class, [
                 'class' => Pouvoir::class,
                 'choice_label' => 'nom',
-                'multiple' => true,
-                'expanded' => true,
-            ])            
+                'multiple' => true,   // Permet la sélection multiple
+                'expanded' => true,   // Affiche sous forme de cases à cocher
+                'label' => 'Pouvoirs Requis',
+            ])
+                
             ->add('equipeAssignee', EntityType::class, [
                 'class' => Equipe::class,
                 'choice_label' => 'nom', // Afficher le nom de l'équipe

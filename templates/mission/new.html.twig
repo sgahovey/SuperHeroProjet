@@ -2,69 +2,151 @@
 
 {% block title %}Créer une Mission{% endblock %}
 
+
 {% block body %}
 <div class="container mt-5">
-    <h1 class="text-center text-primary mb-4">Créer une Nouvelle Mission</h1>
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-    {{ form_widget(form) }}
-    <button type="submit" class="btn btn-success mt-3">Créer</button>
-    <a href="{{ path('app_mission_index') }}" class="btn btn-secondary mt-3">Retour</a>
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Créer une Nouvelle Mission</h1>
+        <p class="text-secondary">Ajoutez une mission épique avec ses détails et attribuez les équipes appropriées.</p>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Formulaire -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Formulaire de création</h4>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.titre, 'Titre de la Mission', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.titre) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.dateDebut, 'Date de Début', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.dateDebut) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.dateFin, 'Date de Fin', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.dateFin) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.niveauDanger, 'Niveau de Danger (1 à 5)', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        {{ form_widget(form.niveauDanger, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.niveauDanger) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.pouvoirsRequis, 'Pouvoirs Requis', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
+                        <div class="form-check d-flex flex-wrap gap-3">
+                            {% for child in form.pouvoirsRequis %}
+                                <div class="form-check form-check-inline">
+                                    {{ form_widget(child, {'attr': {'class': 'form-check-input'}}) }}
+                                    {{ form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ form_errors(form.pouvoirsRequis) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Équipes Compatibles -->
+<h2 class="text-warning fw-bold mt-5 text-center text-shadow">Équipes Compatibles</h2>
+    <div id="equipes-suggerees" class="row g-4"></div>
+
+    <!-- Autres Équipes -->
+    <h2 class="text-secondary fw-bold mt-5 text-center">Autres Équipes</h2>
+    <div id="autres-equipes" class="row g-4"></div>
+
+    <!-- Boutons -->
+    <div class="text-center mt-4">
+        <button type="submit" class="btn btn-danger w-50">
+            <i class="fas fa-save"></i> Créer
+        </button>
+        <a href="{{ path('app_mission_index') }}" class="btn btn-outline-danger w-50 mt-3">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+
     {{ form_end(form) }}
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const pouvoirsSelect = document.querySelector('#mission_pouvoirsRequis'); // ID du champ pouvoirs requis
-    const equipeSelect = document.querySelector('#mission_equipeAssignee'); // ID du champ équipe assignée
+    const pouvoirsCheckboxes = document.querySelectorAll('[name="mission[pouvoirsRequis][]"]');
 
-    // Vérifiez si les éléments existent dans le DOM avant d'ajouter des événements
-    if (pouvoirsSelect && equipeSelect) {
-        pouvoirsSelect.addEventListener('change', () => {
-            // Récupérer les IDs des pouvoirs sélectionnés
-            const pouvoirs = Array.from(pouvoirsSelect.selectedOptions).map(option => option.value);
+    // Écoutez les changements sur toutes les cases à cocher
+    pouvoirsCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const pouvoirs = Array.from(pouvoirsCheckboxes)
+                .filter(cb => cb.checked) // Garder seulement les cases cochées
+                .map(cb => cb.value); // Récupérer leurs valeurs
 
-            // Envoyer une requête AJAX pour récupérer les équipes compatibles
-            fetch('/api/equipes-compatibles', {
+            if (pouvoirs.length === 0) {
+                fetch('/mission/api/equipes-suggerees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pouvoirs: [] }),
+                })
+                    .then(response => response.json())
+                    .then(data => updateEquipeDisplay(data))
+                    .catch(error => console.error('Erreur :', error));
+                return;
+            }
+
+            fetch('/mission/api/equipes-suggerees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pouvoirs }), // Envoie les IDs des pouvoirs
+                body: JSON.stringify({ pouvoirs }),
             })
-            .then(response => response.json())
-            .then(data => {
-                // Vider le champ des équipes avant de le remplir
-                equipeSelect.innerHTML = '';
-
-                // Si des équipes compatibles existent, créer un groupe spécifique
-                if (data.equipesCompatibles.length > 0) {
-                    const groupCompatibles = document.createElement('optgroup');
-                    groupCompatibles.label = 'Équipes compatibles';
-                    data.equipesCompatibles.forEach(equipe => {
-                        const option = document.createElement('option');
-                        option.value = equipe.id;
-                        option.textContent = equipe.nom;
-                        groupCompatibles.appendChild(option);
-                    });
-                    equipeSelect.appendChild(groupCompatibles);
-                }
-
-                // Ajouter toutes les autres équipes (autres choix possibles)
-                if (data.equipesIncompatibles.length > 0) {
-                    const groupIncompatibles = document.createElement('optgroup');
-                    groupIncompatibles.label = 'Autres équipes';
-                    data.equipesIncompatibles.forEach(equipe => {
-                        const option = document.createElement('option');
-                        option.value = equipe.id;
-                        option.textContent = equipe.nom;
-                        groupIncompatibles.appendChild(option);
-                    });
-                    equipeSelect.appendChild(groupIncompatibles);
-                }
-            })
-            .catch(error => {
-                console.error('Erreur lors de la récupération des équipes compatibles :', error);
-            });
+                .then(response => response.json())
+                .then(data => updateEquipeDisplay(data))
+                .catch(error => console.error('Erreur :', error));
         });
+    });
+
+    function updateEquipeDisplay(data) {
+        const equipesSuggereesContainer = document.querySelector('#equipes-suggerees');
+        const autresEquipesContainer = document.querySelector('#autres-equipes');
+
+        equipesSuggereesContainer.innerHTML = '';
+        autresEquipesContainer.innerHTML = '';
+
+        data.suggested.forEach(equipe => equipesSuggereesContainer.appendChild(createEquipeCard(equipe, 'success')));
+        data.others.forEach(equipe => autresEquipesContainer.appendChild(createEquipeCard(equipe, 'secondary')));
     }
+
+    function createEquipeCard(equipe, type) {
+    const div = document.createElement('div');
+    div.className = 'col-md-4'; // Colonne Bootstrap pour une disposition propre
+    div.innerHTML = `
+        <div class="card shadow border-0">
+            <div class="card-header bg-danger text-white text-center fw-bold">
+                ${equipe.nom}
+            </div>
+            <div class="card-body">
+                <p><strong>ID :</strong> ${equipe.id}</p>
+                <p><strong>Chef :</strong> ${equipe.chef || 'Non spécifié'}</p>
+                <p><strong>Membres :</strong> ${equipe.membres.join(', ') || 'Aucun membre'}</p>
+            </div>
+        </div>
+    `;
+    return div;
+}
+
+
 });
 </script>
 {% endblock %}

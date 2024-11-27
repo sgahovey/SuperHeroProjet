@@ -119,31 +119,51 @@ final class MissionController extends AbstractController
         return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/api/equipes-compatibles', name: 'api_equipes_compatibles', methods: ['POST'])]
-public function equipesCompatibles(Request $request, EquipeRepository $equipeRepository): JsonResponse
-{
-    $data = json_decode($request->getContent(), true);
-    $pouvoirsIds = $data['pouvoirs'] ?? [];
-
-    // Récupérer les équipes ayant des membres ou un chef avec les pouvoirs requis
-    $equipes = $equipeRepository->createQueryBuilder('e')
-        ->leftJoin('e.membres', 'm')
-        ->leftJoin('m.pouvoirs', 'p')
-        ->leftJoin('e.chef', 'c')
-        ->leftJoin('c.pouvoirs', 'cp')
-        ->where('p.id IN (:pouvoirs) OR cp.id IN (:pouvoirs)')
-        ->andWhere('e.estActive = true') // Équipes actives uniquement
-        ->setParameter('pouvoirs', $pouvoirsIds)
-        ->getQuery()
-        ->getResult();
-
-    // Préparer la réponse JSON
-    $response = array_map(fn($equipe) => [
-        'id' => $equipe->getId(),
-        'nom' => $equipe->getNom(),
-    ], $equipes);
-
-    return new JsonResponse(['equipes' => $response]);
-}
+    #[Route('/api/equipes-suggerees', name: 'api_equipes_suggerees', methods: ['POST'])]
+    public function equipesSuggerees(Request $request, EquipeRepository $equipeRepository): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $pouvoirsIds = $data['pouvoirs'] ?? [];
+    
+        // Récupérer les équipes dont les membres ou le chef possèdent les pouvoirs sélectionnés
+        $equipesCompatibles = $equipeRepository->createQueryBuilder('e')
+            ->leftJoin('e.membres', 'm')
+            ->leftJoin('m.pouvoirs', 'p')
+            ->leftJoin('e.chef', 'c')
+            ->leftJoin('c.pouvoirs', 'cp')
+            ->where('p.id IN (:pouvoirs) OR cp.id IN (:pouvoirs)')
+            ->andWhere('e.estActive = true') // Filtrer uniquement les équipes actives
+            ->setParameter('pouvoirs', $pouvoirsIds)
+            ->groupBy('e.id')
+            ->getQuery()
+            ->getResult();
+    
+        // Récupérer toutes les autres équipes actives
+        $autresEquipes = $equipeRepository->createQueryBuilder('e')
+            ->where('e.estActive = true')
+            ->andWhere('e NOT IN (:compatibles)')
+            ->setParameter('compatibles', $equipesCompatibles)
+            ->getQuery()
+            ->getResult();
+    
+        // Préparer la réponse JSON
+        $response = [
+            'suggested' => array_map(fn($equipe) => [
+                'id' => $equipe->getId(),
+                'nom' => $equipe->getNom(),
+                'chef' => $equipe->getChef() ? $equipe->getChef()->getNom() : null,
+                'membres' => array_map(fn($membre) => $membre->getNom(), $equipe->getMembres()->toArray()),
+            ], $equipesCompatibles),
+            'others' => array_map(fn($equipe) => [
+                'id' => $equipe->getId(),
+                'nom' => $equipe->getNom(),
+                'chef' => $equipe->getChef() ? $equipe->getChef()->getNom() : null,
+                'membres' => array_map(fn($membre) => $membre->getNom(), $equipe->getMembres()->toArray()),
+            ], $autresEquipes),
+        ];
+    
+        return new JsonResponse($response);
+    }
+    
 
 }
