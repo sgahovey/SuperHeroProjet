@@ -34,13 +34,16 @@ class Mission
     #[ORM\Column(enumType: MissionStatus::class)]
     private MissionStatus $statut;
 
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'missionsPassees')]
+    private ?Equipe $equipeHistorique = null;
+
     // #[ORM\Column(length: 255, nullable: true)]
     // private ?string $statut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateDebut = null;
 
-    #[Assert\GreaterThan(propertyPath: 'dateDebut', message: "La date de fin doit être postérieure à la date de début.")]
+    #[Assert\GreaterThan(propertyPath: 'dateDebut', message: "La date de fin doit être supérieure à la date de début.")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateFin = null;
 
@@ -48,9 +51,10 @@ class Mission
     #[ORM\Column(length: 255)]
     private ?string $lieu = null;
 
+    #[Assert\NotBlank(message: "Vous devez sélectionner au moins un pouvoir requis.")]
     #[ORM\ManyToMany(targetEntity: Pouvoir::class)]
-    #[ORM\JoinTable(name: 'mission_pouvoirs')]
     private Collection $pouvoirsRequis;
+
 
 
     #[ORM\Column]
@@ -66,13 +70,14 @@ class Mission
 
     // #[ORM\Column]
     // private ?int $niveauDanger = null;
-
-    #[ORM\ManyToOne(inversedBy: 'missions')]
+    #[Assert\NotBlank(message: "Une équipe assignée est obligatoire.")]
+    #[ORM\OneToOne(targetEntity: Equipe::class, inversedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Equipe $equipeAssignee = null;
 
-    #[ORM\OneToOne(mappedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
-    private ?Equipe $equipe = null;
+
+    // #[ORM\OneToOne(mappedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
+    // private ?Equipe $equipe = null;
 
     public function getId(): ?int
     {
@@ -200,36 +205,26 @@ public function setStatut(MissionStatus $statut): self
         return $this;
     }
 
+    public function getEquipeHistorique(): ?Equipe
+    {
+        return $this->equipeHistorique;
+    }
+
+    public function setEquipeHistorique(?Equipe $equipe): self
+    {
+        $this->equipeHistorique = $equipe;
+
+        return $this;
+    }
+    
     public function getEquipeAssignee(): ?Equipe
     {
         return $this->equipeAssignee;
     }
 
-    public function setEquipeAssignee(?Equipe $equipeAssignee): static
+    public function setEquipeAssignee(?Equipe $equipe): self
     {
-        $this->equipeAssignee = $equipeAssignee;
-
-        return $this;
-    }
-
-    public function getEquipe(): ?Equipe
-    {
-        return $this->equipe;
-    }
-
-    public function setEquipe(?Equipe $equipe): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($equipe === null && $this->equipe !== null) {
-            $this->equipe->setMissionActuelle(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($equipe !== null && $equipe->getMissionActuelle() !== $this) {
-            $equipe->setMissionActuelle($this);
-        }
-
-        $this->equipe = $equipe;
+        $this->equipeAssignee = $equipe;
 
         return $this;
     }

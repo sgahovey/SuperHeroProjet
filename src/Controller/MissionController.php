@@ -8,6 +8,7 @@ use App\Repository\EquipeRepository;
 use App\Repository\MissionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\DataTransformer\EquipeToIdTransformer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,60 +24,78 @@ final class MissionController extends AbstractController
             'missions' => $missionRepository->findAll(),
         ]);
     }
-
     #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $mission = new Mission();
+    
+        // Création du formulaire
         $form = $this->createForm(MissionType::class, $mission);
+    
+        // Gestion de la requête
         $form->handleRequest($request);
     
+        // Diagnostics pour vérifier les données soumises
+        dump($form->get('equipeAssignee')->getData()); // Vérifie les données brutes du champ
+        dump($mission->getEquipeAssignee()); // Vérifie l'entité transformée
+    
+        // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
-            // Validation : l'équipe assignée doit être active
             $equipeAssignee = $mission->getEquipeAssignee();
-            if (!$equipeAssignee->isEstActive()) {
+    
+            // Validation métier : L'équipe assignée doit être active
+            if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
                 $this->addFlash('error', "L'équipe assignée doit être active.");
                 return $this->render('mission/new.html.twig', [
-                    'form' => $form,
+                    'form' => $form->createView(),
                     'mission' => $mission,
                 ]);
             }
     
-            // Validation : vérifier que les pouvoirs requis existent
+            // Validation métier : Vérifier que des pouvoirs sont requis
             if ($mission->getPouvoirsRequis()->isEmpty()) {
                 $this->addFlash('error', "Vous devez sélectionner au moins un pouvoir requis pour cette mission.");
                 return $this->render('mission/new.html.twig', [
-                    'form' => $form,
+                    'form' => $form->createView(),
                     'mission' => $mission,
                 ]);
             }
     
-            // Validation : la date de début doit être antérieure à la date de fin
+            // Validation métier : Vérifier la cohérence des dates
             if ($mission->getDateDebut() >= $mission->getDateFin()) {
                 $this->addFlash('error', "La date de début doit être antérieure à la date de fin.");
                 return $this->render('mission/new.html.twig', [
-                    'form' => $form,
+                    'form' => $form->createView(),
                     'mission' => $mission,
                 ]);
             }
     
-            // Persist the new mission
+            // Mise à jour de l'équipe assignée
+            $equipeAssignee->setEstActive(false);
+            $equipeAssignee->setMissionActuelle($mission);
+    
             try {
+                // Sauvegarde des données
+                $entityManager->persist($equipeAssignee);
                 $entityManager->persist($mission);
                 $entityManager->flush();
-                $this->addFlash('success', 'La mission a été créée avec succès.');
+    
+                $this->addFlash('success', 'La mission a été créée avec succès et l\'équipe assignée a été mise à jour.');
                 return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
                 $this->addFlash('error', 'Une erreur est survenue lors de la création de la mission : ' . $e->getMessage());
             }
         }
     
+        // Affichage du formulaire
         return $this->render('mission/new.html.twig', [
-            'mission' => $mission,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
     
+    
+
+
 
     #[Route('/{id}', name: 'app_mission_show', methods: ['GET'])]
     public function show(Mission $mission): Response

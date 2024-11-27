@@ -1,47 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mission index{% endblock %}
+{% block title %}Liste des Missions{% endblock %}
 
 {% block body %}
-    <h1>Mission index</h1>
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Liste des Missions</h1>
+        <p class="text-secondary">Toutes les missions en cours ou passées sont listées ici.</p>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Statut</th>
-                <th>DateDebut</th>
-                <th>DateFin</th>
-                <th>Lieu</th>
-                <th>NiveauDanger</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for mission in missions %}
-            <tr>
-                <td>{{ mission.id }}</td>
-                <td>{{ mission.titre }}</td>
-                <td>{{ mission.description }}</td>
-                <td>{{ mission.statut }}</td>
-                <td>{{ mission.dateDebut ? mission.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ mission.dateFin ? mission.dateFin|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ mission.lieu }}</td>
-                <td>{{ mission.niveauDanger }}</td>
-                <td>
-                    <a href="{{ path('app_mission_show', {'id': mission.id}) }}">show</a>
-                    <a href="{{ path('app_mission_edit', {'id': mission.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-danger text-white text-center">
+            <h4 class="mb-0">Missions Disponibles</h4>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped">
+                <thead class="bg-danger text-white">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Titre</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Date Début</th>
+                        <th scope="col">Date Fin</th>
+                        <th scope="col">Lieu</th>
+                        <th scope="col">Niveau de Danger</th>
+                        <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for mission in missions %}
+                    <tr>
+                        <td>{{ mission.id }}</td>
+                        <td>{{ mission.titre }}</td>
+                        <td>{{ mission.description|length > 30 ? mission.description|slice(0, 30) ~ '...' : mission.description }}</td>
+                        <td>
+                            <span class="badge {{ mission.statut.value == 'EN ATTENTE' ? 'bg-warning' : 
+                                                  mission.statut.value == 'COMMENCÉE' ? 'bg-primary' : 
+                                                  mission.statut.value == 'ANNULÉE' ? 'bg-secondary' : 
+                                                  mission.statut.value == 'FINIE' ? 'bg-success' : 
+                                                  'bg-danger' }}">
+                                {{ mission.statut.value }}
+                            </span>
+                        </td>
+                        <td>{{ mission.dateDebut ? mission.dateDebut|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ mission.dateFin ? mission.dateFin|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ mission.lieu }}</td>
+                        <td>
+                            <span class="badge {{ mission.niveauDanger <= 2 ? 'bg-success' : 
+                                                  mission.niveauDanger <= 4 ? 'bg-warning' : 
+                                                  'bg-danger' }}">
+                                {{ mission.niveauDanger }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ path('app_mission_show', {'id': mission.id}) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+                            <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">Aucune mission trouvée.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <a href="{{ path('app_mission_new') }}">Create new</a>
+    <div class="mt-4 text-center">
+        <a href="{{ path('app_mission_new') }}" class="btn btn-danger">
+            <i class="fas fa-plus"></i> Créer une Nouvelle Mission
+        </a>
+    </div>
+</div>
 {% endblock %}

@@ -9,6 +9,8 @@ enum MissionStatus: string
     case CANCELLED = 'ANNULÉE';
     case COMPLETED = 'FINIE';
     case FAILED = 'ÉCHOUÉE';
+    
 }
+
 
 ?>

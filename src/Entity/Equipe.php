@@ -53,19 +53,20 @@ private Collection $membres;
     // #[ORM\ManyToMany(targetEntity: SuperHero::class)]
     // private Collection $membres;
 
-    /**
-     * @var Collection<int, Mission>
-     */
-    #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'equipeAssignee')]
-    private Collection $missions;
+    
 
-    #[ORM\OneToOne(inversedBy: 'equipe', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Mission::class, mappedBy: 'equipeAssignee', cascade: ['persist', 'remove'])]
     private ?Mission $missionActuelle = null;
+
+    #[ORM\OneToMany(mappedBy: 'equipeHistorique', targetEntity: Mission::class, cascade: ['persist', 'remove'])]
+    private Collection $missionsPassees;
+
+    
 
     public function __construct()
     {
+        $this->missionsPassees = new ArrayCollection();
         $this->membres = new ArrayCollection();
-        $this->missions = new ArrayCollection();
         $this->creeLe = new \DateTimeImmutable(); // Définit la date de création par défaut
     }
 
@@ -203,41 +204,39 @@ private Collection $membres;
     /**
      * @return Collection<int, Mission>
      */
-    public function getMissions(): Collection
+    public function getMissionsPassees(): Collection
     {
-        return $this->missions;
+        return $this->missionsPassees;
     }
 
-    public function addMission(Mission $mission): static
+    public function addMissionPassee(Mission $mission): static
     {
-        if (!$this->missions->contains($mission)) {
-            $this->missions->add($mission);
-            $mission->setEquipeAssignee($this);
+        if (!$this->missionsPassees->contains($mission)) {
+            $this->missionsPassees->add($mission);
+            $mission->setEquipeHistorique($this);
         }
 
         return $this;
     }
 
-    public function removeMission(Mission $mission): static
+    public function removeMissionPassee(Mission $mission): static
     {
-        if ($this->missions->removeElement($mission)) {
-            // set the owning side to null (unless already changed)
-            if ($mission->getEquipeAssignee() === $this) {
-                $mission->setEquipeAssignee(null);
+        if ($this->missionsPassees->removeElement($mission)) {
+            if ($mission->getEquipeHistorique() === $this) {
+                $mission->setEquipeHistorique(null);
             }
         }
 
         return $this;
     }
-
     public function getMissionActuelle(): ?Mission
     {
         return $this->missionActuelle;
     }
 
-    public function setMissionActuelle(?Mission $missionActuelle): static
+    public function setMissionActuelle(?Mission $mission): self
     {
-        $this->missionActuelle = $missionActuelle;
+        $this->missionActuelle = $mission;
 
         return $this;
     }

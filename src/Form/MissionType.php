@@ -2,20 +2,27 @@
 
 namespace App\Form;
 
-use App\Entity\Equipe;
 use App\Entity\Mission;
 use App\Entity\Pouvoir;
 use App\Entity\MissionStatus;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
+use App\DataTransformer\EquipeToIdTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class MissionType extends AbstractType
 {
+    private EquipeToIdTransformer $equipeToIdTransformer;
+
+    public function __construct(EquipeToIdTransformer $equipeToIdTransformer)
+    {
+        $this->equipeToIdTransformer = $equipeToIdTransformer;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -28,12 +35,9 @@ class MissionType extends AbstractType
                 'attr' => ['class' => 'form-control', 'rows' => 4],
             ])
             ->add('statut', ChoiceType::class, [
-                'choices' => MissionStatus::cases(), // Récupère toutes les valeurs de l'enum
-                'choice_label' => fn(MissionStatus $status) => $status->value, // Affiche la valeur textuelle
-                'choice_value' => fn(?MissionStatus $status) => $status?->value, // Associe la valeur textuelle
+                'choices' => MissionStatus::cases(),
+                'choice_label' => fn(MissionStatus $status) => $status->value,
             ])
-            
-        
             ->add('dateDebut', DateTimeType::class, [
                 'label' => 'Date de début',
                 'widget' => 'single_text',
@@ -55,28 +59,23 @@ class MissionType extends AbstractType
             ->add('pouvoirsRequis', EntityType::class, [
                 'class' => Pouvoir::class,
                 'choice_label' => 'nom',
-                'multiple' => true,   // Permet la sélection multiple
-                'expanded' => true,   // Affiche sous forme de cases à cocher
+                'multiple' => true,
+                'expanded' => true,
                 'label' => 'Pouvoirs Requis',
             ])
-                
-            ->add('equipeAssignee', EntityType::class, [
-                'class' => Equipe::class,
-                'choice_label' => 'nom', // Afficher le nom de l'équipe
-                'placeholder' => 'Sélectionnez une équipe',
-                'query_builder' => function (EntityRepository $repository) use ($options) {
-                    // Optionnel : filtrer les équipes en fonction de leur état actif ou des pouvoirs requis
-                    return $repository->createQueryBuilder('e')
-                        ->where('e.estActive = true') // Par exemple, uniquement les équipes actives
-                        ->orderBy('e.nom', 'ASC');
-                },
-        ]);
+            ->add('equipeAssignee', HiddenType::class, [
+                'required' => true,
+            ]);  
+
+         // Ajout du DataTransformer pour "equipeAssignee"
+         $builder->get('equipeAssignee')->addModelTransformer($this->equipeToIdTransformer);
+        }
+    
+        public function configureOptions(OptionsResolver $resolver): void
+        {
+            $resolver->setDefaults([
+                'data_class' => Mission::class,
+            ]);
+        }
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => Mission::class,
-        ]);
-    }
-}
