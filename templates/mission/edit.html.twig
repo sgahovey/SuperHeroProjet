@@ -1,13 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Mission{% endblock %}
+{% block title %}Modifier Mission{% endblock %}
 
 {% block body %}
-    <h1>Edit Mission</h1>
+    <h1>Modifier Mission</h1>
 
-    {{ include('mission/_form.html.twig', {'button_label': 'Update'}) }}
+    {# Inclure le formulaire principal d'édition #}
+    {{ form_start(form) }}
+    
+    {{ form_row(form.titre) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.lieu) }}
+    {{ form_row(form.dateDebut) }}
+    {{ form_row(form.niveauDanger) }}
+    
+    {# Champ caché pour le statut (pour éviter un double rendu) #}
+    <div style="display: none;">
+        {{ form_widget(form.statut) }}
+        {{ form_row(form.pouvoirsRequis) }}
+    </div>
 
-    <a href="{{ path('app_mission_index') }}">back to list</a>
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Mettre à jour') }}</button>
+    {{ form_end(form) }}
 
+    <a href="{{ path('app_mission_index') }}" class="btn btn-secondary">Retour à la liste</a>
+
+    {# Inclure le formulaire de suppression #}
     {{ include('mission/_delete_form.html.twig') }}
 {% endblock %}

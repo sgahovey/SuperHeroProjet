@@ -1,50 +1,84 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mission{% endblock %}
+{% block title %}Détails de la Mission{% endblock %}
 
 {% block body %}
-    <h1>Mission</h1>
+<div class="container mt-5">
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">Détails de la Mission</h1>
+        <p class="text-secondary">Découvrez les détails épiques de cette mission héroïque.</p>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ mission.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ mission.titre }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ mission.description }}</td>
-            </tr>
-            <tr>
-                <th>Statut</th>
-                <td>{{ mission.statut }}</td>
-            </tr>
-            <tr>
-                <th>DateDebut</th>
-                <td>{{ mission.dateDebut ? mission.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DateFin</th>
-                <td>{{ mission.dateFin ? mission.dateFin|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Lieu</th>
-                <td>{{ mission.lieu }}</td>
-            </tr>
-            <tr>
-                <th>NiveauDanger</th>
-                <td>{{ mission.niveauDanger }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Carte principale -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-danger text-white text-center">
+            <h4 class="mb-0 fw-bold">Mission : {{ mission.titre }}</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tbody>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">ID</th>
+                        <td>{{ mission.id }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Titre</th>
+                        <td>{{ mission.titre }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Description</th>
+                        <td>{{ mission.description }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Statut</th>
+                        <td>
+                            <span class="badge {{ mission.statut.value == 'EN ATTENTE' ? 'bg-warning' : 
+                                                  mission.statut.value == 'COMMENCÉE' ? 'bg-primary' : 
+                                                  mission.statut.value == 'ANNULÉE' ? 'bg-secondary' : 
+                                                  mission.statut.value == 'FINIE' ? 'bg-success' : 
+                                                  'bg-danger' }}">
+                                {{ mission.statut.value }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Date de Début</th>
+                        <td>{{ mission.dateDebut ? mission.dateDebut|date('d/m/Y H:i') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Date de Fin</th>
+                        <td>{{ mission.dateFin ? mission.dateFin|date('d/m/Y H:i') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Lieu</th>
+                        <td>{{ mission.lieu }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-danger fw-bold" scope="row">Niveau de Danger</th>
+                        <td>
+                            <span class="badge {{ mission.niveauDanger <= 2 ? 'bg-success' : 
+                                                  mission.niveauDanger <= 4 ? 'bg-warning' : 
+                                                  'bg-danger' }}">
+                                {{ mission.niveauDanger }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <a href="{{ path('app_mission_index') }}">back to list</a>
+        <div class="card-footer bg-light text-center">
+            <a href="{{ path('app_mission_index') }}" class="btn btn-outline-danger me-2">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
 
-    <a href="{{ path('app_mission_edit', {'id': mission.id}) }}">edit</a>
+            <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-warning me-2">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
 
-    {{ include('mission/_delete_form.html.twig') }}
+            {{ include('mission/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
 {% endblock %}

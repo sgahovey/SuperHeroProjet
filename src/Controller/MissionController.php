@@ -101,22 +101,81 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     }
 
     #[Route('/{id}/edit', name: 'app_mission_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(MissionType::class, $mission);
-        $form->handleRequest($request);
+public function edit(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(MissionType::class, $mission);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        $dateDebut = $mission->getDateDebut();
+        $currentDate = new \DateTimeImmutable();
 
-            return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
+        // Vérifie si la mission est en attente
+        if ($mission->getStatut() === MissionStatus::PENDING) {
+            if ($dateDebut < $currentDate) {
+                $mission->setDateDebut($currentDate); // Ajuster à la date actuelle
+                $mission->setStatut(MissionStatus::IN_PROGRESS); // Mettre le statut à "Commencé"
+                $this->addFlash('info', 'La mission est passée au statut "Commencé" car la date de début a été dépassée.');
+            } else {
+                $this->addFlash('info', 'La mission reste en attente.');
+            }
+        } else {
+            // Si le statut n'est pas "PENDING", appliquez la logique existante
+            if ($dateDebut < $currentDate) {
+                $mission->setDateDebut($currentDate);
+                $mission->setStatut(MissionStatus::IN_PROGRESS);
+                $this->addFlash('info', 'La date de début a été ajustée à la date actuelle et le statut est défini à "Commencé".');
+            } else {
+                $mission->setStatut(MissionStatus::PENDING);
+            }
         }
 
-        return $this->render('mission/edit.html.twig', [
-            'mission' => $mission,
-            'form' => $form,
-        ]);
+        // Toujours mettre à jour la dateFin
+        $dateFin = $mission->getDateDebut()->modify('+2 minutes');
+        $mission->setDateFin($dateFin);
+
+        try {
+            $entityManager->flush();
+            $this->addFlash('success', 'La mission a été mise à jour avec succès.');
+            return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
+        }
     }
+
+    return $this->render('mission/edit.html.twig', [
+        'mission' => $mission,
+        'form' => $form->createView(),
+    ]);
+}
+
+    
+#[Route('/{id}/cancel', name: 'app_mission_cancel', methods: ['POST'])]
+public function cancel(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
+{
+    // Vérifie la validité du token CSRF
+    if ($this->isCsrfTokenValid('cancel' . $mission->getId(), $request->request->get('_token'))) {
+        // Met le statut de la mission à "ANNULÉE"
+        $mission->setStatut(MissionStatus::CANCELLED);
+
+        // Rendre l'équipe active
+        $equipeAssignee = $mission->getEquipeAssignee();
+        if ($equipeAssignee) {
+            $equipeAssignee->setEstActive(true);
+        }
+
+        // Sauvegarder les modifications
+        $entityManager->flush();
+
+        $this->addFlash('success', 'La mission a été annulée et l\'équipe a été rendue active.');
+    } else {
+        $this->addFlash('error', 'Échec de l\'annulation de la mission. Token CSRF invalide.');
+    }
+
+    return $this->redirectToRoute('app_mission_index');
+}
+
+
 
     #[Route('/{id}', name: 'app_mission_delete', methods: ['POST'])]
     public function delete(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
