@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+
 #[Route('/mission')]
 final class MissionController extends AbstractController
 {
@@ -37,29 +38,23 @@ final class MissionController extends AbstractController
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérifie et initialise la dateDebut si nécessaire
-            $dateDebut = $mission->getDateDebut();
-            if (!$dateDebut instanceof \DateTimeImmutable) {
-                $dateDebut = new \DateTimeImmutable(); // Initialise avec la date actuelle
-                $mission->setDateDebut($dateDebut);
-            }
-    
-            // Vérifie si dateDebut est dans le passé
+            $dateDebut = $mission->getDateDebut(); // Récupère la date de début choisie par l'utilisateur
             $currentDate = new \DateTimeImmutable(); // Date actuelle
+    
+            // Si la `dateDebut` est inférieure à la date actuelle, on ajuste la dateDebut et le statut
             if ($dateDebut < $currentDate) {
-                $mission->setDateDebut($currentDate); // Ajuste la dateDebut
-                $mission->setStatut(MissionStatus::IN_PROGRESS); // Statut: Commencé
+                $mission->setDateDebut($currentDate); // Ajuste la date de début à la date actuelle
+                $mission->setStatut(MissionStatus::IN_PROGRESS); // Définit le statut à "Commencé"
                 $this->addFlash('info', 'La date de début a été ajustée à la date actuelle et le statut est défini à "Commencé".');
             } else {
-                $mission->setStatut(MissionStatus::PENDING); // Statut: En attente
+                $mission->setStatut(MissionStatus::PENDING); // Définit le statut à "En attente"
             }
     
-            // Génère une dateFin basée sur dateDebut
-            $interval = new \DateInterval('PT2M'); // Intervalle de 2 minutes
-            $dateFin = $dateDebut->add($interval); // Utilise `add` pour calculer dateFin
+            // Génère une dateFin basée sur la dateDebut
+            $dateFin = $mission->getDateDebut()->modify('+2 minutes'); // Ajoute 2 minutes
             $mission->setDateFin($dateFin);
     
-            // Validation métier : L'équipe assignée doit être active
+            // Vérifie que l'équipe assignée est active
             $equipeAssignee = $mission->getEquipeAssignee();
             if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
                 $this->addFlash('error', "L'équipe assignée doit être active.");
@@ -69,13 +64,13 @@ final class MissionController extends AbstractController
                 ]);
             }
     
-            // Rendre l'équipe inactive
+            // Rendre l'équipe inactive après assignation
             $equipeAssignee->setEstActive(false);
     
             try {
-                // Sauvegarde initiale de la mission
-                $entityManager->persist($equipeAssignee);
+                // Persiste les données
                 $entityManager->persist($mission);
+                $entityManager->persist($equipeAssignee);
                 $entityManager->flush();
     
                 $this->addFlash('success', 'La mission a été créée avec succès.');
@@ -84,6 +79,7 @@ final class MissionController extends AbstractController
                 $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
             }
         }
+    
         return $this->render('mission/new.html.twig', [
             'form' => $form->createView(),
         ]);

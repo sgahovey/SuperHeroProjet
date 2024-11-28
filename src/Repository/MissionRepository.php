@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Mission;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\MissionStatus;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Mission>
@@ -15,6 +16,18 @@ class MissionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Mission::class);
     }
+
+    public function findInProgressMissionsToUpdate(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.statut = :status') // Missions "Commencées"
+            ->andWhere('m.dateFin <= :now') // Date de fin dépassée
+            ->setParameter('status', MissionStatus::IN_PROGRESS->value) // Utilisation de l'Enum
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getResult();
+    }
+    
 
 //    /**
 //     * @return Mission[] Returns an array of Mission objects

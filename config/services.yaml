@@ -19,3 +19,9 @@ services:
     App\DataTransformer\EquipeToIdTransformer:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+            
+# Ajout du Listener pour mettre à jour les statuts des missions
+    App\EventListener\MissionStatusListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
+        class: App\EventListener\MissionStatusListener
