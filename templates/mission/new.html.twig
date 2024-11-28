@@ -32,13 +32,16 @@
                         {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.description) }}
                     </div>
+                     <div style="display: none;">
+        {{ form_row(form.statut) }}
+    </div>
 
-                    <div class="row">
+                    {# <div class="row">
                         <div class="col-md-6 mb-3">
                             {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                             {{ form_widget(form.statut, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.statut) }}
-                        </div>
+                        </div> #}
                         <div class="col-md-6 mb-3">
                             {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                             {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
@@ -52,11 +55,11 @@
                         {{ form_errors(form.dateDebut) }}
                     </div>
 
-                    <div class="mb-3">
+                    {# <div class="mb-3">
                         {{ form_label(form.dateFin, 'Date de Fin', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.dateFin) }}
-                    </div>
+                    </div> #}
 
                     <div class="mb-3">
                         {{ form_label(form.niveauDanger, 'Niveau de Danger (1 à 5)', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}

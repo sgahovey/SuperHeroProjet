@@ -41,14 +41,13 @@ class MissionType extends AbstractType
             ->add('dateDebut', DateTimeType::class, [
                 'label' => 'Date de début',
                 'widget' => 'single_text',
-                'data' => new \DateTime(), // Définit la valeur par défaut à maintenant
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('dateFin', DateTimeType::class, [
-                'label' => 'Date de fin',
-                'widget' => 'single_text',
-                'attr' => ['class' => 'form-control'],
-            ])
+            // ->add('dateFin', DateTimeType::class, [
+            //     'label' => 'Date de fin',
+            //     'widget' => 'single_text',
+            //     'attr' => ['class' => 'form-control'],
+            // ])
             ->add('lieu', null, [
                 'label' => 'Lieu de la mission',
                 'attr' => ['class' => 'form-control'],

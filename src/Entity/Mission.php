@@ -14,11 +14,7 @@ use Doctrine\Common\Collections\Collection;
 #[ORM\Entity(repositoryClass: MissionRepository::class)]
 class Mission
 {
-    public function __construct()
-{
-    $this->statut = MissionStatus::PENDING; // Initialisation par défaut du STATUT
-    $this->pouvoirsRequis = new ArrayCollection();
-}
+   
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,9 +39,10 @@ class Mission
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateDebut = null;
 
-    #[Assert\GreaterThan(propertyPath: 'dateDebut', message: "La date de fin doit être supérieure à la date de début.")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateFin = null;
+    
+    
 
 
     #[ORM\Column(length: 255)]
@@ -76,6 +73,14 @@ class Mission
     private ?Equipe $equipeAssignee = null;
 
 
+    public function __construct()
+    {
+        $this->statut = MissionStatus::PENDING; // Initialisation par défaut du STATUT
+        $this->pouvoirsRequis = new ArrayCollection();
+        $this->dateDebut = new \DateTime(); // Initialisation de la dateDebut par défaut
+    
+    }
+    
     // #[ORM\OneToOne(mappedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
     // private ?Equipe $equipe = null;
 
@@ -162,7 +167,7 @@ public function setStatut(MissionStatus $statut): self
         return $this->dateDebut;
     }
 
-    public function setDateDebut(\DateTimeInterface $dateDebut): static
+    public function setDateDebut(\DateTimeInterface $dateDebut): self
     {
         $this->dateDebut = $dateDebut;
 
@@ -170,11 +175,11 @@ public function setStatut(MissionStatus $statut): self
     }
 
     public function getDateFin(): ?\DateTimeInterface
-    {
-        return $this->dateFin;
-    }
+{
+    return $this->dateFin;
+}
 
-    public function setDateFin(\DateTimeInterface $dateFin): static
+    public function setDateFin(\DateTimeInterface $dateFin): self
     {
         $this->dateFin = $dateFin;
 

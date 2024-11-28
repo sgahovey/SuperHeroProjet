@@ -25,85 +25,69 @@ final class MissionController extends AbstractController
             'missions' => $missionRepository->findAll(),
         ]);
     }
+
+
+
     #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $mission = new Mission();
-    $mission->setDateDebut(new \DateTime()); // Définit la date actuelle par défaut
-
-    // Création du formulaire
-    $form = $this->createForm(MissionType::class, $mission);
-
-    // Gestion de la requête
-    $form->handleRequest($request);
-
-    // Si le formulaire est soumis et valide
-    if ($form->isSubmitted() && $form->isValid()) {
-        $equipeAssignee = $mission->getEquipeAssignee();
-        $currentDate = new \DateTime(); // Date actuelle
-
-        // Validation métier : Ajuster la date de début si nécessaire
-        if ($mission->getDateDebut() < $currentDate) {
-            $mission->setDateDebut($currentDate); // Ajuste la date de début
-            $this->addFlash('info', 'La date de début a été ajustée à la date actuelle.');
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $mission = new Mission();
+    
+        $form = $this->createForm(MissionType::class, $mission);
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifie et initialise la dateDebut si nécessaire
+            $dateDebut = $mission->getDateDebut();
+            if (!$dateDebut instanceof \DateTimeImmutable) {
+                $dateDebut = new \DateTimeImmutable(); // Initialise avec la date actuelle
+                $mission->setDateDebut($dateDebut);
+            }
+    
+            // Vérifie si dateDebut est dans le passé
+            $currentDate = new \DateTimeImmutable(); // Date actuelle
+            if ($dateDebut < $currentDate) {
+                $mission->setDateDebut($currentDate); // Ajuste la dateDebut
+                $mission->setStatut(MissionStatus::IN_PROGRESS); // Statut: Commencé
+                $this->addFlash('info', 'La date de début a été ajustée à la date actuelle et le statut est défini à "Commencé".');
+            } else {
+                $mission->setStatut(MissionStatus::PENDING); // Statut: En attente
+            }
+    
+            // Génère une dateFin basée sur dateDebut
+            $interval = new \DateInterval('PT2M'); // Intervalle de 2 minutes
+            $dateFin = $dateDebut->add($interval); // Utilise `add` pour calculer dateFin
+            $mission->setDateFin($dateFin);
+    
+            // Validation métier : L'équipe assignée doit être active
+            $equipeAssignee = $mission->getEquipeAssignee();
+            if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
+                $this->addFlash('error', "L'équipe assignée doit être active.");
+                return $this->render('mission/new.html.twig', [
+                    'form' => $form->createView(),
+                    'mission' => $mission,
+                ]);
+            }
+    
+            // Rendre l'équipe inactive
+            $equipeAssignee->setEstActive(false);
+    
+            try {
+                // Sauvegarde initiale de la mission
+                $entityManager->persist($equipeAssignee);
+                $entityManager->persist($mission);
+                $entityManager->flush();
+    
+                $this->addFlash('success', 'La mission a été créée avec succès.');
+                return $this->redirectToRoute('app_mission_index');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
+            }
         }
-
-        // Déterminer le statut de la mission
-        if ($mission->getDateDebut() <= $currentDate) {
-            $mission->setStatut(MissionStatus::IN_PROGRESS); // Mission commencée
-        } else {
-            $mission->setStatut(MissionStatus::PENDING); // Mission en attente
-        }
-
-        // Validation métier : L'équipe assignée doit être active
-        if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
-            $this->addFlash('error', "L'équipe assignée doit être active.");
-            return $this->render('mission/new.html.twig', [
-                'form' => $form->createView(),
-                'mission' => $mission,
-            ]);
-        }
-
-        // Validation métier : Vérifier que des pouvoirs sont requis
-        if ($mission->getPouvoirsRequis()->isEmpty()) {
-            $this->addFlash('error', "Vous devez sélectionner au moins un pouvoir requis pour cette mission.");
-            return $this->render('mission/new.html.twig', [
-                'form' => $form->createView(),
-                'mission' => $mission,
-            ]);
-        }
-
-        // Validation métier : Vérifier la cohérence des dates
-        if ($mission->getDateDebut() >= $mission->getDateFin()) {
-            $this->addFlash('error', "La date de début doit être antérieure à la date de fin.");
-            return $this->render('mission/new.html.twig', [
-                'form' => $form->createView(),
-                'mission' => $mission,
-            ]);
-        }
-
-        // Mise à jour de l'équipe assignée
-        $equipeAssignee->setEstActive(false);
-        $equipeAssignee->setMissionActuelle($mission);
-
-        try {
-            // Sauvegarde des données
-            $entityManager->persist($equipeAssignee);
-            $entityManager->persist($mission);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'La mission a été créée avec succès et l\'équipe assignée a été mise à jour.');
-            return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Une erreur est survenue lors de la création de la mission : ' . $e->getMessage());
-        }
+        return $this->render('mission/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
-
-    // Affichage du formulaire
-    return $this->render('mission/new.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
 
 
     #[Route('/{id}', name: 'app_mission_show', methods: ['GET'])]
