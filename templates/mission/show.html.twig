@@ -16,21 +16,31 @@
             <h4 class="mb-0 fw-bold">Mission : {{ mission.titre }}</h4>
         </div>
         <div class="card-body">
-            <table class="table table-borderless">
+            <table class="table">
                 <tbody>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">ID</th>
                         <td>{{ mission.id }}</td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Titre</th>
                         <td>{{ mission.titre }}</td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Description</th>
                         <td>{{ mission.description }}</td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
+                        <th class="text-danger fw-bold" scope="row">Équipe Assignée</th>
+                        <td>
+                            {% if mission.equipeAssignee %}
+                                {{ mission.equipeAssignee.nom }}
+                            {% else %}
+                                <span class="text-muted">Aucune équipe assignée</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Statut</th>
                         <td>
                             <span class="badge {{ mission.statut.value == 'EN ATTENTE' ? 'bg-warning' : 
@@ -42,19 +52,19 @@
                             </span>
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Date de Début</th>
                         <td>{{ mission.dateDebut ? mission.dateDebut|date('d/m/Y H:i') : '-' }}</td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Date de Fin</th>
                         <td>{{ mission.dateFin ? mission.dateFin|date('d/m/Y H:i') : '-' }}</td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Lieu</th>
                         <td>{{ mission.lieu }}</td>
                     </tr>
-                    <tr>
+                    <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Niveau de Danger</th>
                         <td>
                             <span class="badge {{ mission.niveauDanger <= 2 ? 'bg-success' : 
@@ -68,16 +78,12 @@
             </table>
         </div>
 
+        <hr class="my-4">
+
         <div class="card-footer bg-light text-center">
             <a href="{{ path('app_mission_index') }}" class="btn btn-outline-danger me-2">
                 <i class="fas fa-arrow-left"></i> Retour à la liste
             </a>
-
-            <a href="{{ path('app_mission_edit', {'id': mission.id}) }}" class="btn btn-warning me-2">
-                <i class="fas fa-edit"></i> Modifier
-            </a>
-
-            {{ include('mission/_delete_form.html.twig') }}
         </div>
     </div>
 </div>
