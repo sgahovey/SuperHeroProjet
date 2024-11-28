@@ -27,11 +27,14 @@
                         {{ form_errors(form.nom) }}
                     </div>
 
-                    <!-- État -->
+                    {# <!-- État -->
                     <div class="form-check mb-3">
                         {{ form_widget(form.estActive, {'attr': {'class': 'form-check-input'}}) }}
                         {{ form_label(form.estActive, 'Équipe Active ?', {'label_attr': {'class': 'form-check-label'}}) }}
                         {{ form_errors(form.estActive) }}
+                    </div> #}
+                    <div style="display: none;">
+                        {{ form_row(form.estActive) }}
                     </div>
 
                     <!-- Boutons -->

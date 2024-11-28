@@ -12,57 +12,61 @@
 
     <!-- Tableau des équipes -->
     {% if equipes|length > 0 %}
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover text-center align-middle">
-                <thead class="bg-danger text-white">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nom</th>
-                        <th>Chef</th>
-                        <th>Membres</th>
-                        <th>État</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for equipe in equipes %}
-                    <tr>
-                        <!-- Polices personnalisées -->
-                        <td class="fw-bold" style="font-family: 'Comic Sans MS', sans-serif; color: #6c757d;">{{ equipe.id }}</td>
-                        <td class="text-danger fw-bold" style="font-family: 'Comic Sans MS', cursive;">{{ equipe.nom }}</td>
-                        <td style="font-family: 'Comic Sans MS', sans-serif; color: #007bff;">{{ equipe.chef.nom }}</td>
-                        <td>
-                            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                {% for membre in equipe.membres %}
-                                    <span class="badge bg-primary" style="font-family: 'Comic Sans MS', monospace;">{{ membre.nom }}</span>
-                                {% else %}
-                                    <span class="text-muted" style="font-family: 'Comic Sans MS', sans-serif;">Aucun membre</span>
-                                {% endfor %}
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge {{ equipe.estActive ? 'bg-success' : 'bg-secondary' }}" style="font-family: 'Comic Sans MS', cursive;">
-                                {{ equipe.estActive ? 'Active' : 'Inactive' }}
-                            </span>
-                        </td>
-                        <td>
-                            <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-info btn-sm">
-                                <i class="fas fa-eye"></i> Voir
-                            </a>
-                            <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Modifier
-                            </a>
-                            <form method="post" action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette équipe ?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash-alt"></i> Supprimer
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="mb-0 fw-bold">Équipes Disponibles</h4>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped text-center align-middle">
+                    <thead class="bg-danger text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Chef</th>
+                            <th>Membres</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for equipe in equipes %}
+                        <tr>
+                            <td class="fw-bold">{{ equipe.id }}</td>
+                            <td class="text-danger fw-bold">{{ equipe.nom }}</td>
+                            <td>{{ equipe.chef.nom }}</td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                    {% for membre in equipe.membres %}
+                                        <span class="badge bg-primary">{{ membre.nom }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Aucun membre</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {{ equipe.estActive ? 'bg-success' : 'bg-secondary' }}">
+                                    {{ equipe.estActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette équipe ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     {% else %}
         <div class="alert alert-warning text-center" role="alert">

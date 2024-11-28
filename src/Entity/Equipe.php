@@ -58,14 +58,14 @@ private Collection $membres;
     #[ORM\OneToOne(targetEntity: Mission::class, mappedBy: 'equipeAssignee', cascade: ['persist', 'remove'])]
     private ?Mission $missionActuelle = null;
 
-    #[ORM\OneToMany(mappedBy: 'equipeHistorique', targetEntity: Mission::class, cascade: ['persist', 'remove'])]
-    private Collection $missionsPassees;
+    #[ORM\OneToMany(mappedBy: 'equipeAssignee', targetEntity: Mission::class)]
+    private Collection $missionsHistorique;
 
-    
+
 
     public function __construct()
     {
-        $this->missionsPassees = new ArrayCollection();
+        $this->missionsHistorique = new ArrayCollection();
         $this->membres = new ArrayCollection();
         $this->creeLe = new \DateTimeImmutable(); // Définit la date de création par défaut
     }
@@ -202,33 +202,34 @@ private Collection $membres;
     }
 
     /**
-     * @return Collection<int, Mission>
-     */
-    public function getMissionsPassees(): Collection
-    {
-        return $this->missionsPassees;
+ * @return Collection<int, Mission>
+ */
+public function getMissionsHistorique(): Collection
+{
+    return $this->missionsHistorique;
+}
+
+public function addMissionHistorique(Mission $mission): self
+{
+    if (!$this->missionsHistorique->contains($mission)) {
+        $this->missionsHistorique->add($mission);
+        $mission->setEquipeAssignee($this); // Lier la mission à l'équipe
     }
 
-    public function addMissionPassee(Mission $mission): static
-    {
-        if (!$this->missionsPassees->contains($mission)) {
-            $this->missionsPassees->add($mission);
-            $mission->setEquipeHistorique($this);
+    return $this;
+}
+
+public function removeMissionHistorique(Mission $mission): self
+{
+    if ($this->missionsHistorique->removeElement($mission)) {
+        if ($mission->getEquipeAssignee() === $this) {
+            $mission->setEquipeAssignee(null);
         }
-
-        return $this;
     }
 
-    public function removeMissionPassee(Mission $mission): static
-    {
-        if ($this->missionsPassees->removeElement($mission)) {
-            if ($mission->getEquipeHistorique() === $this) {
-                $mission->setEquipeHistorique(null);
-            }
-        }
+    return $this;
+}
 
-        return $this;
-    }
     public function getMissionActuelle(): ?Mission
     {
         return $this->missionActuelle;

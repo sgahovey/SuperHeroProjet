@@ -30,12 +30,6 @@ class Mission
     #[ORM\Column(enumType: MissionStatus::class)]
     private MissionStatus $statut;
 
-    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'missionsPassees')]
-    private ?Equipe $equipeHistorique = null;
-
-    // #[ORM\Column(length: 255, nullable: true)]
-    // private ?string $statut = null;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateDebut = null;    
 
@@ -206,18 +200,6 @@ public function setStatut(MissionStatus $statut): self
     public function setNiveauDanger(int $niveauDanger): static
     {
         $this->niveauDanger = $niveauDanger;
-
-        return $this;
-    }
-
-    public function getEquipeHistorique(): ?Equipe
-    {
-        return $this->equipeHistorique;
-    }
-
-    public function setEquipeHistorique(?Equipe $equipe): self
-    {
-        $this->equipeHistorique = $equipe;
 
         return $this;
     }
