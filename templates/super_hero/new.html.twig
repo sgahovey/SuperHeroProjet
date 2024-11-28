@@ -58,11 +58,16 @@
                         {{ form_widget(form.imageFile, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.imageFile) }}
                     </div>
-                    <div class="mb-3">
+                     <div style="display: none;">
+                        {{ form_row(form.estDisponible) }}
+                        {{ form_row(form.creeLe) }}
+
+                    </div>
+                    {# <div class="mb-3">
                         {{ form_label(form.creeLe, 'Créé le', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.creeLe, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.creeLe) }}
-                    </div>
+                    </div> #}
                     <!-- Bouton Créer -->
                     <button type="submit" class="btn btn-danger w-100 mt-3">
                         <i class="fas fa-save"></i> Créer

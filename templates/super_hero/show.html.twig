@@ -57,6 +57,14 @@
                                 <span class="text-muted">Aucun pouvoir associé.</span>
                             {% endif %}
                         </li>
+                        {% if super_hero.equipes|length > 0 %}
+                        <li class="list-group-item">
+                            <strong>Équipe : </strong>
+                            {% for equipe in super_hero.equipes %}
+                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="text-decoration-none text-danger fw-bold">{{ equipe.nom }}</a>{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
@@ -76,10 +84,10 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-light">
             <div class="modal-header border-0">
-            <h5 class="modal-title" id="imageModalLabel" style="color: #FFD700;">
+                <h5 class="modal-title" id="imageModalLabel" style="color: #FFD700;">
                     Image de {{ super_hero.nom }}
-            </h5> 
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
                 <img src="{{ asset('uploads/superheroes/' ~ super_hero.nomImage) }}" alt="{{ super_hero.nom }}" class="img-fluid rounded">
