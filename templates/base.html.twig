@@ -67,7 +67,7 @@
                         <a class="nav-link {% if app.request.attributes.get('_route') == 'app_mission_index' %}active{% endif %}" href="{{ path('app_mission_index') }}">Missions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link href="{{ path('app_mission_index') }}">Missions</a>
+                        <a class="nav-link {% if app.request.attributes.get('_route') == 'app_dashboard' %}active{% endif %}" href="{{ path('app_dashboard') }}">Dashboard</a>
                     </li>
                 </ul>
             </div>
