@@ -5,11 +5,9 @@ namespace App\EventListener;
 use App\Repository\MissionRepository;
 use App\Entity\MissionStatus;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
-final class MissionStatusListener
+class MissionStatusListener
 {
     private MissionRepository $missionRepository;
     private EntityManagerInterface $entityManager;
@@ -20,23 +18,37 @@ final class MissionStatusListener
         $this->entityManager = $entityManager;
     }
 
-    #[AsEventListener(event: KernelEvents::REQUEST)]
     public function onKernelRequest(RequestEvent $event): void
     {
-        // Vérifie que ce n'est pas une sous-requête ou une requête CLI
+        // Vérifie que ce n'est pas une requête sous forme de sous-requête ou de console
         if (!$event->isMainRequest()) {
             return;
         }
 
-        // Récupérer les missions à mettre à jour
-        $missions = $this->missionRepository->findInProgressMissionsToUpdate();
+        $currentDate = new \DateTimeImmutable();
 
-        foreach ($missions as $mission) {
-            $possibleStatuses = [MissionStatus::CANCELLED, MissionStatus::COMPLETED, MissionStatus::FAILED];
+        // Missions en attente (PENDING) à commencer
+        $pendingMissions = $this->missionRepository->findPendingMissionsToStart($currentDate);
+        foreach ($pendingMissions as $mission) {
+            $mission->setStatut(MissionStatus::IN_PROGRESS);
+        }
+    
+        // Récupère les missions "Commencées" (IN_PROGRESS) dont la date de fin est dépassée
+        $inProgressMissions = $this->missionRepository->findInProgressMissionsToUpdate($currentDate);
+        foreach ($inProgressMissions as $mission) {
+            // Définir un statut aléatoire
+            $possibleStatuses = [MissionStatus::COMPLETED, MissionStatus::FAILED];
             $randomStatus = $possibleStatuses[array_rand($possibleStatuses)];
-            $mission->setStatut($randomStatus);
+            $mission->setStatut($randomStatus); // Met à jour le statut de la mission
+
+            // Réactive l'équipe associée à la mission
+            $equipe = $mission->getEquipeAssignee();
+            if ($equipe) {
+                $equipe->setEstActive(true);
+            }
         }
 
-        $this->entityManager->flush(); // Sauvegarde en base
+        // Sauvegarder les changements en base de données
+        $this->entityManager->flush();
     }
 }

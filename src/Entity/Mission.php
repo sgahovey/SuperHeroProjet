@@ -36,8 +36,8 @@ class Mission
     // #[ORM\Column(length: 255, nullable: true)]
     // private ?string $statut = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateDebut = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $dateDebut = null;    
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateFin = null;
@@ -77,10 +77,10 @@ class Mission
     {
         $this->statut = MissionStatus::PENDING; // Initialisation par défaut du STATUT
         $this->pouvoirsRequis = new ArrayCollection();
-        $this->dateDebut = new \DateTime(); // Initialisation de la dateDebut par défaut
+        $this->dateDebut = new \DateTimeImmutable(); // Définit la date actuelle par défaut
     
     }
-    
+
     // #[ORM\OneToOne(mappedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
     // private ?Equipe $equipe = null;
 
@@ -162,17 +162,17 @@ public function setStatut(MissionStatus $statut): self
     //     return $this;
     // }
 
-    public function getDateDebut(): ?\DateTimeInterface
+    public function getDateDebut(): ?\DateTimeImmutable
     {
         return $this->dateDebut;
     }
 
-    public function setDateDebut(\DateTimeInterface $dateDebut): self
-    {
-        $this->dateDebut = $dateDebut;
+    public function setDateDebut(\DateTimeImmutable $dateDebut): self
+{
+    $this->dateDebut = $dateDebut;
+    return $this;
+}
 
-        return $this;
-    }
 
     public function getDateFin(): ?\DateTimeInterface
 {

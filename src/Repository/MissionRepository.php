@@ -17,17 +17,32 @@ class MissionRepository extends ServiceEntityRepository
         parent::__construct($registry, Mission::class);
     }
 
-    public function findInProgressMissionsToUpdate(): array
+
+    public function findPendingMissionsToStart(\DateTimeImmutable $currentDate): array
+{
+    return $this->createQueryBuilder('m')
+        ->where('m.statut = :status') // Filtre sur les missions "En attente"
+        ->andWhere('m.dateDebut <= :now') // La date de début est dépassée
+        ->setParameter('status', MissionStatus::PENDING)
+        ->setParameter('now', $currentDate)
+        ->getQuery()
+        ->getResult();
+}
+
+    public function findInProgressMissionsToUpdate(\DateTimeImmutable $currentDate): array
     {
         return $this->createQueryBuilder('m')
-            ->where('m.statut = :status') // Missions "Commencées"
-            ->andWhere('m.dateFin <= :now') // Date de fin dépassée
-            ->setParameter('status', MissionStatus::IN_PROGRESS->value) // Utilisation de l'Enum
-            ->setParameter('now', new \DateTimeImmutable())
+            ->where('m.statut = :status') // Filtre sur les missions "Commencées"
+            ->andWhere('m.dateFin <= :now') // La date de fin est dépassée
+            ->setParameter('status', MissionStatus::IN_PROGRESS)
+            ->setParameter('now', $currentDate)
             ->getQuery()
             ->getResult();
     }
     
+
+    
+
 
 //    /**
 //     * @return Mission[] Returns an array of Mission objects

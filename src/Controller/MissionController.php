@@ -30,61 +30,67 @@ final class MissionController extends AbstractController
 
 
     #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $mission = new Mission();
-    
-        $form = $this->createForm(MissionType::class, $mission);
-        $form->handleRequest($request);
-    
-        if ($form->isSubmitted() && $form->isValid()) {
-            $dateDebut = $mission->getDateDebut(); // Récupère la date de début choisie par l'utilisateur
-            $currentDate = new \DateTimeImmutable(); // Date actuelle
-    
-            // Si la `dateDebut` est inférieure à la date actuelle, on ajuste la dateDebut et le statut
-            if ($dateDebut < $currentDate) {
-                $mission->setDateDebut($currentDate); // Ajuste la date de début à la date actuelle
-                $mission->setStatut(MissionStatus::IN_PROGRESS); // Définit le statut à "Commencé"
-                $this->addFlash('info', 'La date de début a été ajustée à la date actuelle et le statut est défini à "Commencé".');
-            } else {
-                $mission->setStatut(MissionStatus::PENDING); // Définit le statut à "En attente"
-            }
-    
-            // Génère une dateFin basée sur la dateDebut
-            $dateFin = $mission->getDateDebut()->modify('+2 minutes'); // Ajoute 2 minutes
-            $mission->setDateFin($dateFin);
-    
-            // Vérifie que l'équipe assignée est active
-            $equipeAssignee = $mission->getEquipeAssignee();
-            if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
-                $this->addFlash('error', "L'équipe assignée doit être active.");
-                return $this->render('mission/new.html.twig', [
-                    'form' => $form->createView(),
-                    'mission' => $mission,
-                ]);
-            }
-    
-            // Rendre l'équipe inactive après assignation
-            $equipeAssignee->setEstActive(false);
-    
-            try {
-                // Persiste les données
-                $entityManager->persist($mission);
-                $entityManager->persist($equipeAssignee);
-                $entityManager->flush();
-    
-                $this->addFlash('success', 'La mission a été créée avec succès.');
-                return $this->redirectToRoute('app_mission_index');
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
-            }
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $mission = new Mission();
+
+    $form = $this->createForm(MissionType::class, $mission);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $dateDebut = $mission->getDateDebut(); // Récupère la date de début
+        $currentDate = new \DateTimeImmutable(); // Date actuelle
+
+        // Vérifie ou ajuste la dateDebut
+        if (!$dateDebut instanceof \DateTimeImmutable) {
+            $dateDebut = $currentDate;
+            $mission->setDateDebut($dateDebut);
         }
-    
-        return $this->render('mission/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
+
+        if ($dateDebut < $currentDate) {
+            $mission->setDateDebut($currentDate);
+            $mission->setStatut(MissionStatus::IN_PROGRESS);
+            $this->addFlash('info', 'La date de début a été ajustée et le statut est "Commencé".');
+        } else {
+            $mission->setStatut(MissionStatus::PENDING);
+        }
+
+        // Définit la date de fin
+        $dateFin = $mission->getDateDebut()->add(new \DateInterval('PT2M')); // +2 minutes
+        $mission->setDateFin($dateFin);
+
+        // Vérifie l'état de l'équipe
+        $equipeAssignee = $mission->getEquipeAssignee();
+        if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
+            $this->addFlash('error', "L'équipe assignée doit être active.");
+            return $this->render('mission/new.html.twig', [
+                'form' => $form->createView(),
+                'mission' => $mission,
+            ]);
+        }
+
+        // Rendre l'équipe inactive
+        $equipeAssignee->setEstActive(false);
+
+        try {
+            $entityManager->persist($mission);
+            $entityManager->persist($equipeAssignee);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La mission a été créée avec succès.');
+            return $this->redirectToRoute('app_mission_index');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
+        }
     }
 
+    return $this->render('mission/new.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
+    
+    
 
     #[Route('/{id}', name: 'app_mission_show', methods: ['GET'])]
     public function show(Mission $mission): Response
