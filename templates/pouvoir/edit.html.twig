@@ -1,50 +1,71 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier le Pouvoir{% endblock %}
+{% block title %}Associer des Super Héros{% endblock %}
 
 {% block body %}
 <div class="container mt-5">
     <!-- Titre principal -->
     <div class="text-center mb-4">
-        <h1 class="text-danger fw-bold">Modifier le Pouvoir</h1>
-        <p class="text-secondary">Apportez des modifications au pouvoir sélectionné.</p>
+        <h1 class="text-danger fw-bold">Associer des Super Héros</h1>
+        <p class="text-secondary">Sélectionnez les super-héros à associer à ce pouvoir.</p>
     </div>
 
-    <!-- Contenu principal -->
+    <!-- Formulaire -->
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <!-- Formulaire -->
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-danger text-white text-center">
-                    <h4 class="mb-0">Formulaire d'édition</h4>
+                    <h4 class="mb-0">Formulaire d'Association</h4>
                 </div>
                 <div class="card-body">
                     {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
-                    <!-- Nom -->
+                    <!-- Autres champs avant Super Héros -->
                     <div class="mb-3">
                         {{ form_label(form.nom, 'Nom du Pouvoir', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.nom) }}
                     </div>
 
-                    <!-- Description -->
                     <div class="mb-3">
                         {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
                         {{ form_errors(form.description) }}
                     </div>
 
-                    <!-- Niveau -->
                     <div class="mb-3">
                         {{ form_label(form.niveau, 'Niveau', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.niveau, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.niveau) }}
                     </div>
 
-                    <!-- Bouton Mettre à jour -->
+                    <!-- Super Héros sous forme de cartes -->
+                    <div class="mb-3">
+                        <label class="form-label text-danger fw-bold">Super Héros :</label>
+                        <div class="row g-3">
+                            {% for hero in form.superHeroes %}
+                                <div class="col-md-4">
+                                    <div class="card shadow border-0">
+                                        <div class="card-body text-center">
+                                            <!-- Nom du héros -->
+                                            <h5 class="card-title text-danger">{{ hero.vars.label }}</h5>
+                                            
+                                            <!-- Case à cocher -->
+                                            <div class="form-check">
+                                                {{ form_widget(hero, {'attr': {'class': 'form-check-input'}}) }}
+                                                {{ form_label(hero, 'Sélectionner', {'label_attr': {'class': 'form-check-label'}}) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ form_errors(form.superHeroes) }}
+                    </div>
+
+                    <!-- Bouton de soumission -->
                     <button type="submit" class="btn btn-danger w-100 mt-3">
-                        <i class="fas fa-save"></i> Mettre à jour
+                        <i class="fas fa-save"></i> Sauvegarder
                     </button>
 
                     {{ form_end(form) }}

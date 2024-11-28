@@ -10,59 +10,63 @@
         <p class="text-secondary">Découvrez et gérez les pouvoirs extraordinaires de vos héros.</p>
     </div>
 
-    <!-- Contenu principal -->
-    <div class="row">
-        <div class="col">
-            {% if pouvoirs|length > 0 %}
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-center align-middle">
-                        <thead class="bg-danger text-white">
-                            <tr>
-                                <th>Id</th>
-                                <th>Nom</th>
-                                <th>Description</th>
-                                <th>Niveau</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for pouvoir in pouvoirs %}
-                            <tr>
-                                <!-- Ajout des polices personnalisées -->
-                                <td class="fw-bold" style="font-family: 'Comic Sans MS', sans-serif; color: #6c757d;">{{ pouvoir.id }}</td>
-                                <td class="text-danger fw-bold" style="font-family: 'Comic Sans MS', cursive;">{{ pouvoir.nom }}</td>
-                                <td style="font-family: 'Comic Sans MS', sans-serif; color: #007bff;">{{ pouvoir.description }}</td>
-                                <td style="font-family: 'Comic Sans MS', monospace; color: #28a745;">{{ pouvoir.niveau }}</td>
-                                <td>
-                                    <a href="{{ path('app_pouvoir_show', {'id': pouvoir.id}) }}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Voir
-                                    </a>
-                                    <a href="{{ path('app_pouvoir_edit', {'id': pouvoir.id}) }}" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i> Modifier
-                                    </a>
-                                    <form method="post" action="{{ path('app_pouvoir_delete', {'id': pouvoir.id}) }}" style="display: inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce pouvoir ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pouvoir.id) }}">
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash-alt"></i> Supprimer
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <div class="alert alert-warning text-center" role="alert">
-                    Aucun pouvoir trouvé.
-                </div>
-            {% endif %}
+    <!-- Tableau des pouvoirs -->
+    {% if pouvoirs|length > 0 %}
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="mb-0 fw-bold">Pouvoirs Disponibles</h4>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped text-center align-middle">
+                    <thead class="bg-danger text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Niveau</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for pouvoir in pouvoirs %}
+                        <tr>
+                            <td class="fw-bold">{{ pouvoir.id }}</td>
+                            <td class="text-danger fw-bold">{{ pouvoir.nom }}</td>
+                            <td>{{ pouvoir.description|length > 50 ? pouvoir.description|slice(0, 50) ~ '...' : pouvoir.description }}</td>
+                            <td>
+                                <span class="badge {{ pouvoir.niveau <= 2 ? 'bg-success' : pouvoir.niveau <= 4 ? 'bg-warning' : 'bg-danger' }}">
+                                    {{ pouvoir.niveau }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ path('app_pouvoir_show', {'id': pouvoir.id}) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_pouvoir_edit', {'id': pouvoir.id}) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_pouvoir_delete', {'id': pouvoir.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce pouvoir ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pouvoir.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            Aucun pouvoir trouvé.
+        </div>
+    {% endif %}
 
-    <!-- Bouton Créer -->
+    <!-- Bouton Créer un nouveau Pouvoir -->
     <div class="text-center mt-4">
-        <a href="{{ path('app_pouvoir_new') }}" class="btn btn-success btn-lg">
+        <a href="{{ path('app_pouvoir_new') }}" class="btn btn-danger">
             <i class="fas fa-plus"></i> Créer un nouveau Pouvoir
         </a>
     </div>
