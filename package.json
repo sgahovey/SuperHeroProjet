@@ -19,6 +19,7 @@
     "build:css": "tailwindcss -i ./assets/styles/tailwind.css -o ./public/build/tailwind.css"
   },
   "dependencies": {
-    "@symfony/stimulus-bridge": "^3.2.2"
+    "@symfony/stimulus-bridge": "^3.2.2",
+    "chart.js": "^4.4.6"
   }
 }
