@@ -47,7 +47,6 @@ class MissionStatusListener
                 $equipe->setEstActive(true);
             }
         }
-
         // Sauvegarder les changements en base de données
         $this->entityManager->flush();
     }

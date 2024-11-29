@@ -116,10 +116,27 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container py-5">
-        {% block body %}{% endblock %}
-    </main>
+  <main class="container py-5">
+    <!-- Notifications -->
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="toast bg-{{ label == 'success' ? 'success' : (label == 'error' ? 'danger' : 'secondary') }} text-white" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">{{ label|capitalize }}</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Fermer"></button>
+                    </div>
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
 
+    <!-- Contenu de la page -->
+    {% block body %}{% endblock %}
+</main>
     <!-- Footer -->
     <footer class="text-center bg-marvel-red text-light py-3">
         <p>&copy; {{ "now"|date("Y") }} SuperHero Dashboard. Tous droits réservés.</p>
@@ -135,6 +152,18 @@
             body.classList.toggle('dark-mode');
             toggleButton.textContent = body.classList.contains('dark-mode') ? '☀️ Mode Clair' : '🌙 Mode Sombre';
         });
+
+
+        {# NOTIFICATION #}
+    document.addEventListener('DOMContentLoaded', () => {
+        // Activer toutes les notifications toast
+        const toastElements = document.querySelectorAll('.toast');
+        toastElements.forEach((toastElement) => {
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+        });
+    });
+
     </script>
 </body>
 </html>

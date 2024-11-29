@@ -28,6 +28,11 @@
                         {{ form_errors(form.nom) }}
                     </div>
 
+                    <!-- Champ caché pour l'état actif -->
+                    <div style="display: none;">
+                        {{ form_row(form.estActive) }}
+                    </div>
+
                     <!-- Chef de l'équipe -->
                     <div class="mb-3">
                         {{ form_label(form.chef, 'Chef de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
@@ -35,14 +40,24 @@
                         {{ form_errors(form.chef) }}
                     </div>
 
-                    <!-- Membres de l'équipe -->
+                    <!-- Membres de l'équipe sous forme de cartes -->
                     <div class="mb-3">
                         {{ form_label(form.membres, 'Membres de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
-                        <div class="form-check">
+                        <div class="row">
                             {% for membre in form.membres %}
-                                <div class="form-check-inline">
-                                    {{ form_widget(membre, {'attr': {'class': 'form-check-input'}}) }}
-                                    {{ form_label(membre, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body text-center">
+                                            <!-- Nom du membre -->
+                                            <h5 class="card-title text-danger fw-bold">{{ membre.vars.label }}</h5>
+
+                                            <!-- Checkbox du membre -->
+                                            <div class="form-check mt-2">
+                                                {{ form_widget(membre, {'attr': {'class': 'form-check-input'}}) }}
+                                                {{ form_label(membre, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>
