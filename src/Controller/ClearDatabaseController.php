@@ -3,33 +3,31 @@
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ClearDatabaseController
+class ClearDatabaseController extends AbstractController
 {
     #[Route('/clear-database', name: 'clear_database')]
     public function clearDatabase(EntityManagerInterface $entityManager): Response
     {
-        // Liste des entités à vider
+        // Liste des entités à supprimer
         $repositories = [
             'App\Entity\Mission',
             'App\Entity\SuperHero',
             'App\Entity\Equipe',
-            'App\Entity\Pouvoir',
-
         ];
 
-        // Supprime toutes les entités
         foreach ($repositories as $entityClass) {
             $repository = $entityManager->getRepository($entityClass);
             $entities = $repository->findAll();
+
             foreach ($entities as $entity) {
                 $entityManager->remove($entity);
             }
         }
 
-        // Appliquer les suppressions
         $entityManager->flush();
 
         return new Response('Toutes les données ont été supprimées.');
