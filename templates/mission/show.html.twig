@@ -10,26 +10,31 @@
         <p class="text-secondary">Découvrez les détails épiques de cette mission héroïque.</p>
     </div>
 
-    <!-- Carte principale -->
+    <!-- Carte principale contenant les détails de la mission -->
     <div class="card shadow-lg border-0">
         <div class="card-header bg-danger text-white text-center">
             <h4 class="mb-0 fw-bold">Mission : {{ mission.titre }}</h4>
         </div>
+    <!-- Corps de la carte avec les informations détaillées -->
         <div class="card-body">
             <table class="table">
                 <tbody>
+                    <!-- Ligne pour l'ID de la mission -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">ID</th>
                         <td>{{ mission.id }}</td>
                     </tr>
+                    <!-- Ligne pour le titre de la mission -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Titre</th>
                         <td>{{ mission.titre }}</td>
                     </tr>
+                    <!-- Ligne pour la description de la mission -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Description</th>
                         <td>{{ mission.description }}</td>
                     </tr>
+                     <!-- Ligne pour l'équipe assignée -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Équipe Assignée</th>
                         <td>
@@ -39,6 +44,7 @@
                                 <span class="text-muted">Aucune équipe assignée</span>
                             {% endif %}
                         </td>
+                    <!-- Ligne pour le statut de la mission -->
                     </tr>
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Statut</th>
@@ -52,18 +58,22 @@
                             </span>
                         </td>
                     </tr>
+                    <!-- Ligne pour la date de début -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Date de Début</th>
                         <td>{{ mission.dateDebut ? mission.dateDebut|date('d/m/Y H:i') : '-' }}</td>
                     </tr>
+                    <!-- Ligne pour la date de fin -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Date de Fin</th>
                         <td>{{ mission.dateFin ? mission.dateFin|date('d/m/Y H:i') : '-' }}</td>
                     </tr>
+                    <!-- Ligne pour le lieu -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Lieu</th>
                         <td>{{ mission.lieu }}</td>
                     </tr>
+                     <!-- Ligne pour le niveau de danger -->
                     <tr class="border-bottom">
                         <th class="text-danger fw-bold" scope="row">Niveau de Danger</th>
                         <td>
@@ -77,9 +87,9 @@
                 </tbody>
             </table>
         </div>
-
+        <!-- Séparateur visuel -->
         <hr class="my-4">
-
+<!-- Pied de la carte avec un bouton de retour -->
         <div class="card-footer bg-light text-center">
             <a href="{{ path('app_mission_index') }}" class="btn btn-outline-danger me-2">
                 <i class="fas fa-arrow-left"></i> Retour à la liste

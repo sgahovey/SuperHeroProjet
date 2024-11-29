@@ -10,7 +10,7 @@
         <p class="text-secondary">Apportez des modifications à l'équipe sélectionnée.</p>
     </div>
 
-    <!-- Formulaire -->
+    <!-- Formulaire de modification -->
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-lg border-0">
@@ -18,21 +18,15 @@
                     <h4 class="mb-0">Formulaire de modification</h4>
                 </div>
                 <div class="card-body">
+                 {# Démarre le formulaire Symfony pour l'édition de l'équipe #}
                     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-                    
                     <!-- Nom -->
                     <div class="mb-3">
                         {{ form_label(form.nom, 'Nom de l\'Équipe', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.nom) }}
                     </div>
-
-                    {# <!-- État -->
-                    <div class="form-check mb-3">
-                        {{ form_widget(form.estActive, {'attr': {'class': 'form-check-input'}}) }}
-                        {{ form_label(form.estActive, 'Équipe Active ?', {'label_attr': {'class': 'form-check-label'}}) }}
-                        {{ form_errors(form.estActive) }}
-                    </div> #}
+                    <!-- Champ pour le nom de l'équipe -->
                     <div style="display: none;">
                         {{ form_row(form.estActive) }}
                     </div>

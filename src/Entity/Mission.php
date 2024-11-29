@@ -14,8 +14,6 @@ use Doctrine\Common\Collections\Collection;
 #[ORM\Entity(repositoryClass: MissionRepository::class)]
 class Mission
 {
-   
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,9 +33,6 @@ class Mission
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateFin = null;
-    
-    
-
 
     #[ORM\Column(length: 255)]
     private ?string $lieu = null;
@@ -45,8 +40,6 @@ class Mission
     #[Assert\NotBlank(message: "Vous devez sélectionner au moins un pouvoir requis.")]
     #[ORM\ManyToMany(targetEntity: Pouvoir::class)]
     private Collection $pouvoirsRequis;
-
-
 
     #[ORM\Column]
     #[Assert\NotNull(message: "Le niveau de danger est requis.")]
@@ -56,11 +49,7 @@ class Mission
         notInRangeMessage: "Le niveau de danger doit être compris entre {{ min }} et {{ max }}."
     )]
     private ?int $niveauDanger = null;
-    
 
-
-    // #[ORM\Column]
-    // private ?int $niveauDanger = null;
     #[Assert\NotBlank(message: "Une équipe assignée est obligatoire.")]
     #[ORM\OneToOne(targetEntity: Equipe::class, inversedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -74,9 +63,6 @@ class Mission
         $this->dateDebut = new \DateTimeImmutable(); // Définit la date actuelle par défaut
     
     }
-
-    // #[ORM\OneToOne(mappedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
-    // private ?Equipe $equipe = null;
 
     public function getId(): ?int
     {
@@ -109,16 +95,16 @@ class Mission
 
 
     public function getStatut(): MissionStatus
-{
-    return $this->statut;
-}
+    {
+        return $this->statut;
+    }
 
-public function setStatut(MissionStatus $statut): self
-{
-    $this->statut = $statut;
+    public function setStatut(MissionStatus $statut): self
+    {
+        $this->statut = $statut;
 
-    return $this;
-}
+        return $this;
+    }
 
     /**
      * @return Collection<int, Pouvoir>
@@ -143,18 +129,6 @@ public function setStatut(MissionStatus $statut): self
 
         return $this;
     }
-
-    // public function getStatut(): ?string
-    // {
-    //     return $this->statut;
-    // }
-
-    // public function setStatut(?string $statut): static
-    // {
-    //     $this->statut = $statut;
-
-    //     return $this;
-    // }
 
     public function getDateDebut(): ?\DateTimeImmutable
     {

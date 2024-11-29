@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Détails de l'Équipe{% endblock %}
-
 {% block body %}
 <div class="container mt-5">
     <!-- Titre principal -->
@@ -9,8 +7,7 @@
         <h1 class="text-danger fw-bold">Détails de l'Équipe</h1>
         <p class="text-secondary">Explorez les informations détaillées de l'équipe sélectionnée.</p>
     </div>
-
-    <!-- Tableau des détails -->
+    <!-- Tableau d'informations sur l'équipe -->
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-lg border-0">
@@ -21,14 +18,17 @@
                     <table class="table table-bordered text-center">
                         <tbody>
                             <tr>
+                             {# Affiche le nom de l'équipe #}
                                 <th class="bg-light text-danger">Nom</th>
                                 <td>{{ equipe.nom }}</td>
                             </tr>
                             <tr>
+                             {# Affiche le chef de l'équipe #}
                                 <th class="bg-light text-danger">Chef</th>
                                 <td>{{ equipe.chef.nom }}</td>
                             </tr>
                             <tr>
+                            {# Liste les membres de l'équipe avec des badges #}
                                 <th class="bg-light text-danger">Membres</th>
                                 <td>
                                     {% for membre in equipe.membres %}
@@ -38,6 +38,7 @@
                                 </td>
                             </tr>
                             <tr>
+                            {# Indique si l'équipe est active ou inactive #}
                                 <th class="bg-light text-danger">État</th>
                                 <td>
                                     <span class="badge {{ equipe.estActive ? 'bg-success' : 'bg-danger' }}">
@@ -45,6 +46,7 @@
                                     </span>
                                 </td>
                             </tr>
+                            {# Si l'équipe est inactive mais a une mission en cours, affiche cette mission #}
                             {% if not equipe.estActive and equipe.missionActuelle %}
                                 <tr>
                                     <th class="bg-light text-danger">Mission en cours</th>

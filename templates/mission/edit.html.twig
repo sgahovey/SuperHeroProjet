@@ -3,11 +3,11 @@
 {% block title %}Modifier Mission{% endblock %}
 
 {% block body %}
+    <!-- Titre principal de la page -->
     <h1>Modifier Mission</h1>
 
     {# Inclure le formulaire principal d'édition #}
     {{ form_start(form) }}
-    
     {{ form_row(form.titre) }}
     {{ form_row(form.description) }}
     {{ form_row(form.lieu) }}

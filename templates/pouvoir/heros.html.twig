@@ -1,10 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}    
 
+<!-- Titre principal de la page -->
 {% block title %}Héros ayant le pouvoir {{ pouvoir.nom }}{% endblock %}
 
 {% block body %}
     <h1>Héros ayant le pouvoir "{{ pouvoir.nom }}"</h1>
-
+    <!-- Vérifie si la liste des héros associés au pouvoir n'est pas vide -->
     {% if super_heroes|length > 0 %}
         <ul>
             {% for hero in super_heroes %}
@@ -15,9 +16,10 @@
                 </li>
             {% endfor %}
         </ul>
-    {% else %}
+    {% else %}        
+    <!-- Message affiché si aucun héros n'est associé au pouvoir -->
         <p>Aucun héros n'a ce pouvoir pour le moment.</p>
-    {% endif %}
-
+    {% endif %}    
+    <!-- Bouton pour revenir à la liste des pouvoirs -->
     <a href="{{ path('app_pouvoir_index') }}" class="btn btn-secondary">Retour à la liste des pouvoirs</a>
 {% endblock %}

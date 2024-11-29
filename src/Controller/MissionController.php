@@ -27,8 +27,9 @@ final class MissionController extends AbstractController
         ]);
     }
 
-
-
+/**
+ * Crée une nouvelle mission.
+ */
     #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): Response
 {
@@ -47,19 +48,20 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             $mission->setDateDebut($dateDebut);
         }
 
+        // Ajustement de la date de début et du statut
         if ($dateDebut < $currentDate) {
             $mission->setDateDebut($currentDate);
-            $mission->setStatut(MissionStatus::IN_PROGRESS);
+            $mission->setStatut(MissionStatus::IN_PROGRESS); // La mission commence immédiatement
             $this->addFlash('info', 'La date de début a été ajustée et le statut est "Commencé".');
         } else {
             $mission->setStatut(MissionStatus::PENDING);
         }
 
-        // Définit la date de fin
+         // Calcul de la date de fin (2 minutes après le début, exemple fictif)
         $dateFin = $mission->getDateDebut()->add(new \DateInterval('PT2M')); // +2 minutes
         $mission->setDateFin($dateFin);
 
-        // Vérifie l'état de l'équipe
+       // Vérification de l'équipe assignée
         $equipeAssignee = $mission->getEquipeAssignee();
         if (!$equipeAssignee || !$equipeAssignee->isEstActive()) {
             $this->addFlash('error', "L'équipe assignée doit être active.");
@@ -69,13 +71,13 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             ]);
         }
 
-        // Rendre l'équipe inactive
+        // L'équipe devient inactive une fois assignée
         $equipeAssignee->setEstActive(false);
 
         try {
-            $entityManager->persist($mission);
-            $entityManager->persist($equipeAssignee);
-            $entityManager->flush();
+            $entityManager->persist($mission); // Persister la mission
+            $entityManager->persist($equipeAssignee); // Persister l'état de l'équipe
+            $entityManager->flush(); // Sauvegarder les modifications
 
             $this->addFlash('success', 'La mission a été créée avec succès.');
             return $this->redirectToRoute('app_mission_index');
@@ -89,9 +91,10 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     ]);
 }
 
-    
-    
 
+/**
+ * Affiche les détails d'une mission.
+ */
     #[Route('/{id}', name: 'app_mission_show', methods: ['GET'])]
     public function show(Mission $mission): Response
     {
@@ -100,6 +103,10 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         ]);
     }
 
+    
+/**
+ * Modifie une mission existante.
+ */    
     #[Route('/{id}/edit', name: 'app_mission_edit', methods: ['GET', 'POST'])]
 public function edit(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
 {
@@ -120,7 +127,7 @@ public function edit(Request $request, Mission $mission, EntityManagerInterface 
                 $this->addFlash('info', 'La mission reste en attente.');
             }
         } else {
-            // Si le statut n'est pas "PENDING", appliquez la logique existante
+            // Si le statut n'est pas en attente, appliquez la logique existante
             if ($dateDebut < $currentDate) {
                 $mission->setDateDebut($currentDate);
                 $mission->setStatut(MissionStatus::IN_PROGRESS);
@@ -130,7 +137,7 @@ public function edit(Request $request, Mission $mission, EntityManagerInterface 
             }
         }
 
-        // Toujours mettre à jour la dateFin
+        // // Met à jour la date de fin  + 2 min
         $dateFin = $mission->getDateDebut()->modify('+2 minutes');
         $mission->setDateFin($dateFin);
 
@@ -149,34 +156,36 @@ public function edit(Request $request, Mission $mission, EntityManagerInterface 
     ]);
 }
 
-    
-#[Route('/{id}/cancel', name: 'app_mission_cancel', methods: ['POST'])]
-public function cancel(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
-{
-    // Vérifie la validité du token CSRF
-    if ($this->isCsrfTokenValid('cancel' . $mission->getId(), $request->request->get('_token'))) {
-        // Met le statut de la mission à "ANNULÉE"
-        $mission->setStatut(MissionStatus::CANCELLED);
 
-        // Rendre l'équipe active
-        $equipeAssignee = $mission->getEquipeAssignee();
-        if ($equipeAssignee) {
-            $equipeAssignee->setEstActive(true);
+/**
+ * Annule une mission.
+ */
+    #[Route('/{id}/cancel', name: 'app_mission_cancel', methods: ['POST'])]
+    public function cancel(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
+    {
+        // Vérifie la validité du token CSRF
+        if ($this->isCsrfTokenValid('cancel' . $mission->getId(), $request->request->get('_token'))) {
+            // Met le statut de la mission à "ANNULÉE"
+            $mission->setStatut(MissionStatus::CANCELLED);
+
+            // Rendre l'équipe active
+            $equipeAssignee = $mission->getEquipeAssignee();
+            if ($equipeAssignee) {
+                $equipeAssignee->setEstActive(true);
+            }
+            // Sauvegarder les modifications
+            $entityManager->flush();
+            $this->addFlash('success', 'La mission a été annulée et l\'équipe a été rendue active.');
+        } else {
+            $this->addFlash('error', 'Échec de l\'annulation de la mission. Token CSRF invalide.');
         }
-
-        // Sauvegarder les modifications
-        $entityManager->flush();
-
-        $this->addFlash('success', 'La mission a été annulée et l\'équipe a été rendue active.');
-    } else {
-        $this->addFlash('error', 'Échec de l\'annulation de la mission. Token CSRF invalide.');
+        return $this->redirectToRoute('app_mission_index');
     }
 
-    return $this->redirectToRoute('app_mission_index');
-}
 
-
-
+/**
+ * Supprime une mission.
+ */
     #[Route('/{id}', name: 'app_mission_delete', methods: ['POST'])]
     public function delete(Request $request, Mission $mission, EntityManagerInterface $entityManager): Response
     {
@@ -192,6 +201,10 @@ public function cancel(Request $request, Mission $mission, EntityManagerInterfac
         return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
     }
 
+
+/**
+ * API pour suggérer des équipes en fonction des pouvoirs requis.
+ */
     #[Route('/api/equipes-suggerees', name: 'api_equipes_suggerees', methods: ['POST'])]
     public function equipesSuggerees(Request $request, EquipeRepository $equipeRepository): JsonResponse
     {

@@ -1,4 +1,8 @@
+<!-- Début du formulaire -->
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+<!-- Génère automatiquement les champs du formulaire -->
+    {{ form_widget(form) }}    
+<!-- Bouton de soumission -->
     <button class="btn">{{ button_label|default('Save') }}</button>
+<!-- Fin du formulaire -->
 {{ form_end(form) }}

@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+* Contrôleur pour gérer les super-héros (CRUD).
+ */
 #[Route('/superhero')]
 final class SuperHeroController extends AbstractController
 {
@@ -18,34 +21,48 @@ final class SuperHeroController extends AbstractController
     public function index(SuperHeroRepository $superHeroRepository): Response
     {
         return $this->render('super_hero/index.html.twig', [
-            'super_heroes' => $superHeroRepository->findAll(),
+            'super_heroes' => $superHeroRepository->findAll(), // Récupère tous les super-héros
         ]);
     }
 
+
+/**
+ * Crée un nouveau super-héros.
+ * 
+ * @param Request $request La requête HTTP
+ * @param EntityManagerInterface $entityManager Le gestionnaire d'entités
+ * @return Response La réponse HTTP contenant le formulaire ou la redirection
+ */
     #[Route('/new', name: 'app_super_hero_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Créer un  SuperHero
+        // Créer une instance de SuperHero et définir sa disponibilité par défaut
         $superHero = new SuperHero();
-        $superHero->setEstDisponible(true); // Super Hero mis automatiquement disponible
+        $superHero->setEstDisponible(true);  // Le super-héros est disponible par défaut
+        // Créer le formulaire
         $form = $this->createForm(SuperHeroType::class, $superHero);
         $form->handleRequest($request);
-
+        // Vérifie si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($superHero);
             $entityManager->flush();
-
-            $this->addFlash('success', 'Le Super Héros a été créé avec succès.'); // Succes
-            return $this->redirectToRoute('app_super_hero_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Le Super Héros a été créé avec succès.'); // Notification de succès
+            return $this->redirectToRoute('app_super_hero_index', [], Response::HTTP_SEE_OTHER); // Redirection
         }
-
+        // Affiche le formulaire
         return $this->render('super_hero/new.html.twig', [
             'super_hero' => $superHero,
             'form' => $form,
         ]);
     }
 
-        // Rechercher un  SuperHero par rapport à son id
+
+/**
+ * Affiche les détails d'un super-héros spécifique.
+ * 
+ * @param SuperHero $superHero Le super-héros à afficher
+ * @return Response La réponse HTTP contenant les détails du super-héros
+ */
     #[Route('/{id}', name: 'app_super_hero_show', methods: ['GET'])]
     public function show(SuperHero $superHero): Response
     {
@@ -54,7 +71,15 @@ final class SuperHeroController extends AbstractController
         ]);
     }
 
-        // Modifier un  SuperHero par rapport à son id
+
+/**
+ * Modifie un super-héros existant.
+ * 
+ * @param Request $request La requête HTTP
+ * @param SuperHero $superHero Le super-héros à modifier
+ * @param EntityManagerInterface $entityManager Le gestionnaire d'entités
+ * @return Response La réponse HTTP contenant le formulaire ou la redirection
+ */
     #[Route('/{id}/edit', name: 'app_super_hero_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, SuperHero $superHero, EntityManagerInterface $entityManager): Response
     {
@@ -63,7 +88,7 @@ final class SuperHeroController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            $this->addFlash('success', 'Le Super Héros a été mis à jour avec succès.'); //Succes
+            $this->addFlash('success', 'Le Super Héros a été mis à jour avec succès.');
             return $this->redirectToRoute('app_super_hero_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -73,8 +98,15 @@ final class SuperHeroController extends AbstractController
         ]);
     }
 
-        // Supprimer un SuperHero
 
+/**
+ * Supprime un super-héros.
+ * 
+ * @param Request $request La requête HTTP
+ * @param SuperHero $superHero Le super-héros à supprimer
+ * @param EntityManagerInterface $entityManager Le gestionnaire d'entités
+ * @return Response La réponse HTTP contenant la redirection
+ */
     #[Route('/{id}', name: 'app_super_hero_delete', methods: ['POST'])]
     public function delete(Request $request, SuperHero $superHero, EntityManagerInterface $entityManager): Response
     {

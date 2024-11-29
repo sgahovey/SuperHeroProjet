@@ -1,4 +1,8 @@
+{# Début du formulaire : génère la balise <form> avec les attributs appropriés (méthode POST, action, etc.) #}
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{# Rendu automatique de tous les champs du formulaire :  #}
+{{ form_widget(form) }}
+{# Bouton de soumission du formulaire :  #}
+<button class="btn">{{ button_label|default('Save') }}</button>
+{# Fin du formulaire :  #}
 {{ form_end(form) }}

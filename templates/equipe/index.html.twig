@@ -10,7 +10,7 @@
         <p class="text-secondary">Découvrez les équipes existantes et leurs membres.</p>
     </div>
 
-    <!-- Tableau des équipes -->
+    <!-- Tableau d'informations sur l'équipe -->
     {% if equipes|length > 0 %}
         <div class="card shadow-lg border-0">
             <div class="card-header bg-danger text-white text-center">
@@ -31,10 +31,13 @@
                     <tbody>
                     {% for equipe in equipes %}
                         <tr>
+                        {# Affiche les informations de l'équipe #}
                             <td class="fw-bold">{{ equipe.id }}</td>
                             <td class="text-danger fw-bold">{{ equipe.nom }}</td>
+                             {# Affiche le chef de l'équipe #}
                             <td>{{ equipe.chef.nom }}</td>
                             <td>
+                              {# Parcourt la liste des membres de l'équipe et les affiche sous forme de badges #}
                                 <div class="d-flex flex-wrap gap-2 justify-content-center">
                                     {% for membre in equipe.membres %}
                                         <span class="badge bg-primary">{{ membre.nom }}</span>
@@ -44,11 +47,13 @@
                                 </div>
                             </td>
                             <td>
+                            {# Badge indiquant l'état de l'équipe : vert pour "Active", gris pour "Inactive" #}
                                 <span class="badge {{ equipe.estActive ? 'bg-success' : 'bg-secondary' }}">
                                     {{ equipe.estActive ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
                             <td>
+                             {# Bouton pour afficher les détails de l'équipe #}
                                 <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-eye"></i> Voir
                                 </a>

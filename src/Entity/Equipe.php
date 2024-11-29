@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
 class Equipe
 {
-    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -46,15 +45,8 @@ class Equipe
     maxMessage: 'Une équipe ne peut pas avoir plus de 5 membres.'
     )]
     #[ORM\ManyToMany(targetEntity: SuperHero::class)]
-private Collection $membres;
-    // /**
-    //  * @var Collection<int, SuperHero>
-    //  */
-    // #[ORM\ManyToMany(targetEntity: SuperHero::class)]
-    // private Collection $membres;
-
+    private Collection $membres;
     
-
     #[ORM\OneToOne(targetEntity: Mission::class, mappedBy: 'equipeAssignee', cascade: ['persist', 'remove'])]
     private ?Mission $missionActuelle = null;
 
@@ -112,10 +104,10 @@ private Collection $membres;
     }
     
     public function setChef(?SuperHero $chef): static
-{
+    {
     $this->chef = $chef;
     return $this;
-}
+    }
 
     public function getChef(): ?SuperHero
     {
@@ -166,7 +158,7 @@ private Collection $membres;
     }
 
     public function addMembre(SuperHero $membre): static
-{
+    {   
     // Vérifier si le membre est déjà chef
     if ($this->chef && $this->chef === $membre) {
         throw new \InvalidArgumentException("Le chef ne peut pas être un membre de l'équipe.");
@@ -184,15 +176,7 @@ private Collection $membres;
     }
 
     return $this;
-}
-    // public function addMembre(SuperHero $membre): static
-    // {
-    //     if (!$this->membres->contains($membre)) {
-    //         $this->membres->add($membre);
-    //     }
-
-    //     return $this;
-    // }
+    }   
 
     public function removeMembre(SuperHero $membre): static
     {
@@ -200,35 +184,32 @@ private Collection $membres;
 
         return $this;
     }
-
     /**
  * @return Collection<int, Mission>
  */
-public function getMissionsHistorique(): Collection
-{
-    return $this->missionsHistorique;
-}
-
-public function addMissionHistorique(Mission $mission): self
-{
-    if (!$this->missionsHistorique->contains($mission)) {
-        $this->missionsHistorique->add($mission);
-        $mission->setEquipeAssignee($this); // Lier la mission à l'équipe
+    public function getMissionsHistorique(): Collection
+    {
+        return $this->missionsHistorique;
     }
 
-    return $this;
-}
-
-public function removeMissionHistorique(Mission $mission): self
-{
-    if ($this->missionsHistorique->removeElement($mission)) {
-        if ($mission->getEquipeAssignee() === $this) {
-            $mission->setEquipeAssignee(null);
+    public function addMissionHistorique(Mission $mission): self
+    {
+        if (!$this->missionsHistorique->contains($mission)) {
+            $this->missionsHistorique->add($mission);
+            $mission->setEquipeAssignee($this); // Lier la mission à l'équipe
         }
+        return $this;
     }
 
-    return $this;
-}
+    public function removeMissionHistorique(Mission $mission): self
+    {
+        if ($this->missionsHistorique->removeElement($mission)) {
+            if ($mission->getEquipeAssignee() === $this) {
+                $mission->setEquipeAssignee(null);
+            }
+        }
+        return $this;
+    }
 
     public function getMissionActuelle(): ?Mission
     {

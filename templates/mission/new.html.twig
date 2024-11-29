@@ -18,61 +18,51 @@
                 <div class="card-header bg-danger text-white text-center">
                     <h4 class="mb-0">Formulaire de création</h4>
                 </div>
-                <div class="card-body">
-                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                <div class="card-body">   
 
+                <!-- Début du formulaire -->
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                <!-- Champ pour le titre de la mission -->
                     <div class="mb-3">
                         {{ form_label(form.titre, 'Titre de la Mission', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.titre) }}
-                    </div>
-
+                    </div>                    
+                <!-- Champ pour la description de la mission -->
                     <div class="mb-3">
                         {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.description) }}
                     </div>
+                <!-- Champ caché pour le statut -->
                      <div style="display: none;">
-        {{ form_row(form.statut) }}
-    </div>
-
-                    {# <div class="row">
-                        <div class="col-md-6 mb-3">
-                            {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
-                            {{ form_widget(form.statut, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.statut) }}
-                        </div> #}
+                        {{ form_row(form.statut) }}
+                    </div>
+                <!-- Champ pour le lieu de la mission -->
                         <div class="col-md-6 mb-3">
                             {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                             {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.lieu) }}
                         </div>
+                <!-- Champ pour la date de début -->
                     <div class="mb-3">
                         {{ form_label(form.dateDebut, 'Date de Début', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.dateDebut) }}
                     </div>
-
-                    {# <div class="mb-3">
-                        {{ form_label(form.dateFin, 'Date de Fin', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
-                        {{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(form.dateFin) }}
-                    </div> #}
-
+                <!-- Champ pour le niveau de danger -->
                     <div class="mb-3">
                         {{ form_label(form.niveauDanger, 'Niveau de Danger (1 à 5)', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         {{ form_widget(form.niveauDanger, {'attr': {'class': 'form-control'}}) }}
                         {{ form_errors(form.niveauDanger) }}
                     </div>
-
                     <!-- Champ caché pour l'équipe assignée -->
                     {{ form_widget(form.equipeAssignee, {'attr': {'type': 'hidden', 'required': true}}) }}
-        <!-- Conteneur pour afficher le message d'erreur -->
+                <!-- Conteneur pour afficher le message d'erreur -->
                     <div id="equipe-error-container"  style="display: none;">
                         Veuillez sélectionner une équipe pour cette mission.
                     </div>
-                   
-
+                <!-- Liste des pouvoirs requis -->
                     <div class="mb-3">
                         {{ form_label(form.pouvoirsRequis, 'Pouvoirs Requis', {'label_attr': {'class': 'form-label text-danger fw-bold'}}) }}
                         <div class="form-check d-flex flex-wrap gap-3">
@@ -90,7 +80,7 @@
         </div>
     </div>
 
-    <!-- Équipes Compatibles -->
+    <!-- Liste des Équipes Compatibles -->
     <h2 class="text-warning fw-bold mt-5 text-center text-shadow">Équipes Compatibles</h2>
     <div id="equipes-suggerees" class="row g-4"></div>
 
@@ -98,7 +88,7 @@
     <h2 class="text-secondary fw-bold mt-5 text-center">Autres Équipes</h2>
     <div id="autres-equipes" class="row g-4"></div>
 
-    <!-- Boutons -->
+    <!-- Boutons pour soumettre ou retourner à la liste-->
     <div class="text-center mt-4">
         <button id="submit-button" type="submit" class="btn btn-danger w-50">
             <i class="fas fa-save"></i> Créer
@@ -111,6 +101,7 @@
     {{ form_end(form) }}
 </div>
 
+<!-- Script pour gérer les équipes et les pouvoirs -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const pouvoirsCheckboxes = document.querySelectorAll('[name="mission[pouvoirsRequis][]"]');
@@ -118,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const equipeErrorContainer = document.getElementById('equipe-error-container');
     const submitButton = document.getElementById('submit-button');
 
+// Mise à jour des équipes affichées en fonction des pouvoirs sélectionnés
     function updateEquipeDisplay(data) {
         const equipesSuggereesContainer = document.querySelector('#equipes-suggerees');
         const autresEquipesContainer = document.querySelector('#autres-equipes');
@@ -130,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         addEquipeSelectionHandler(); // Réattacher les écouteurs
     }
-
+// Création des cartes pour afficher les équipes
     function createEquipeCard(equipe, type) {
         const div = document.createElement('div');
         div.className = 'col-md-4';
@@ -153,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         return div;
     }
-
+    // Gérer la sélection d'une équipe
     function addEquipeSelectionHandler() {
         const equipeCheckboxes = document.querySelectorAll('.equipe-checkbox');
         equipeCheckboxes.forEach(checkbox => {
@@ -165,14 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
+    // Validation avant soumission
     submitButton.addEventListener('click', (event) => {
         if (!equipeAssigneeInput.value) {
             event.preventDefault();
             equipeErrorContainer.style.display = 'block';
         }
     });
-
+    // Mise à jour dynamique des équipes en fonction des pouvoirs
     pouvoirsCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             const pouvoirs = Array.from(pouvoirsCheckboxes)

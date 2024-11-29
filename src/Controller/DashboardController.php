@@ -11,16 +11,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class DashboardController extends AbstractController
 {
+/**
+ * Action principale pour afficher le tableau de bord.
+ *
+ * @param MissionRepository $missionRepo Repository pour accéder aux missions.
+ * @param SuperHeroRepository $heroRepo Repository pour accéder aux super-héros.
+ * @param EquipeRepository $equipeRepo Repository pour accéder aux équipes.
+ * @return Response La réponse avec les données du tableau de bord.
+ */
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(MissionRepository $missionRepo, SuperHeroRepository $heroRepo, EquipeRepository $equipeRepo): Response
-    {
+    {   
+         // Récupérer les missions en cours (statut : "COMMENCÉE") + Super-Héros in/disponibles + Equipes actives + calcul total des Super-Héros 
         $missionsEnCours = $missionRepo->findBy(['statut' => 'COMMENCÉE']);
         $herosDisponibles = $heroRepo->findBy(['estDisponible' => true]);
         $herosIndisponibles = $heroRepo->findBy(['estDisponible' => false]);
         $herosTotal = count($herosDisponibles) + count($herosIndisponibles);
     
         $equipesActives = $equipeRepo->findBy(['estActive' => true]);
-    
+        
+        // Passer les données récupérées à la vue.
         return $this->render('/dashboard/index.html.twig', [
             'missionsEnCours' => $missionsEnCours,
             'herosDisponibles' => $herosDisponibles,

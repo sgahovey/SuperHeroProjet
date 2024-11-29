@@ -34,10 +34,6 @@ class Pouvoir
         notInRangeMessage: 'Le niveau doit être compris entre {{ min }} et {{ max }}.',
     )]
     private ?int $niveau = null;
-
-    // #[ORM\Column]
-    // private ?int $niveau = null;
-
     /**
      * @var Collection<int, SuperHero>
      */

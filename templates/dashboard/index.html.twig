@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{# Définit le titre de la page dans l'onglet du navigateur #}
 {% block title %}Dashboard{% endblock %}
-
+{# Contenu principal de la page #}
 {% block body %}
 <div class="container mt-5">
     <!-- Titre principal -->
@@ -25,6 +25,7 @@
                         </div>
                     </div>
                 </div>
+                {# Carte des héros disponibles #}
                 <div class="col-md-3">
                     <div class="card shadow border-0 bg-success text-white">
                         <div class="card-body">
@@ -33,6 +34,7 @@
                         </div>
                     </div>
                 </div>
+                {# Carte des héros indisponibles #}
                 <div class="col-md-3">
                     <div class="card shadow border-0 bg-danger text-white">
                         <div class="card-body">
@@ -41,6 +43,7 @@
                         </div>
                     </div>
                 </div>
+                {# Carte des équipes actives #}
                 <div class="col-md-3">
                     <div class="card shadow border-0 bg-warning text-dark">
                         <div class="card-body">
