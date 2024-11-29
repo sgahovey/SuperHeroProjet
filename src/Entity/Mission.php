@@ -51,9 +51,10 @@ class Mission
     private ?int $niveauDanger = null;
 
     #[Assert\NotBlank(message: "Une équipe assignée est obligatoire.")]
-    #[ORM\OneToOne(targetEntity: Equipe::class, inversedBy: 'missionActuelle', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'missionsHistorique')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Equipe $equipeAssignee = null;
+
 
 
     public function __construct()

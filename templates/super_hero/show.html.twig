@@ -57,14 +57,32 @@
                                 <span class="text-muted">Aucun pouvoir associé.</span>
                             {% endif %}
                         </li>
-                        {% if super_hero.equipes|length > 0 %}
+                       {% if super_hero.equipes|length > 0 %}
                         <li class="list-group-item">
-                            <strong>Équipe : </strong>
-                            {% for equipe in super_hero.equipes %}
-                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="text-decoration-none text-danger fw-bold">{{ equipe.nom }}</a>{% if not loop.last %}, {% endif %}
-                            {% endfor %}
+                            <strong>Équipes :</strong>
+                            <ul class="mt-2">
+                                {% for equipe in super_hero.equipes %}
+                                    <li>
+                                        <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="text-decoration-none text-danger fw-bold">
+                                            {{ equipe.nom }}
+                                        </a>
+                                        <br>
+                                        <strong>Chef :</strong> {{ equipe.chef.nom }}<br>
+                                        <strong>Membres :</strong>
+                                        {% if equipe.membres|length > 0 %}
+                                            <ul>
+                                                {% for membre in equipe.membres %}
+                                                    <li>{{ membre.nom }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <span class="text-muted">Aucun membre dans cette équipe.</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </li>
-                        {% endif %}
+                    {% endif %}
                     </ul>
                 </div>
             </div>

@@ -50,8 +50,9 @@ class Equipe
     #[ORM\OneToOne(targetEntity: Mission::class, mappedBy: 'equipeAssignee', cascade: ['persist', 'remove'])]
     private ?Mission $missionActuelle = null;
 
-    #[ORM\OneToMany(mappedBy: 'equipeAssignee', targetEntity: Mission::class)]
+    #[ORM\OneToMany(mappedBy: 'equipeAssignee', targetEntity: Mission::class, cascade: ['persist', 'remove'])]
     private Collection $missionsHistorique;
+
 
 
 

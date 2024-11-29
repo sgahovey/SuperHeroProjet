@@ -172,6 +172,7 @@ public function edit(Request $request, Mission $mission, EntityManagerInterface 
             $equipeAssignee = $mission->getEquipeAssignee();
             if ($equipeAssignee) {
                 $equipeAssignee->setEstActive(true);
+                $equipeAssignee->setMissionActuelle(null); // Libère la mission actuelle
             }
             // Sauvegarder les modifications
             $entityManager->flush();

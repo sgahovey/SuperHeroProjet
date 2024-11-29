@@ -45,6 +45,7 @@ class MissionStatusListener
             $equipe = $mission->getEquipeAssignee();
             if ($equipe) {
                 $equipe->setEstActive(true);
+                $equipe->setMissionActuelle(null); // Libère la mission actuelle
             }
         }
         // Sauvegarder les changements en base de données
