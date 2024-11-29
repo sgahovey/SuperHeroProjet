@@ -25,7 +25,6 @@
                         </div>
                     </div>
                 </div>
-                {# Carte des héros disponibles #}
                 <div class="col-md-3">
                     <div class="card shadow border-0 bg-success text-white">
                         <div class="card-body">
@@ -34,7 +33,6 @@
                         </div>
                     </div>
                 </div>
-                {# Carte des héros indisponibles #}
                 <div class="col-md-3">
                     <div class="card shadow border-0 bg-danger text-white">
                         <div class="card-body">
@@ -43,7 +41,6 @@
                         </div>
                     </div>
                 </div>
-                {# Carte des équipes actives #}
                 <div class="col-md-3">
                     <div class="card shadow border-0 bg-warning text-dark">
                         <div class="card-body">
@@ -98,7 +95,7 @@
     </div>
 
     <!-- Liste des Équipes Actives -->
-    <div class="card shadow-lg border-0">
+    <div class="card shadow-lg border-0 mb-5">
         <div class="card-header bg-success text-white text-center">
             <h4 class="mb-0">Équipes Actives</h4>
         </div>
@@ -119,7 +116,7 @@
                                 <tr>
                                     <td>{{ equipe.id }}</td>
                                     <td>{{ equipe.nom }}</td>
-                                    <td><span class="badge bg-primary">{{ equipe.chef.nom }}</td></span>
+                                    <td><span class="badge bg-primary">{{ equipe.chef.nom }}</span></td>
                                     <td>
                                         {% for membre in equipe.membres %}
                                             <span class="badge bg-secondary">{{ membre.nom }}</span>
@@ -137,5 +134,64 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Graphique des Statistiques des Missions -->
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="card-header bg-info text-white text-center">
+            <h4 class="mb-0">Statistiques des Missions</h4>
+        </div>
+        <div class="card-body">
+            <canvas id="missionsChart" width="400" height="200"></canvas>
+        </div>
+    </div>
 </div>
+
+<!-- Script pour le graphique Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('missionsChart').getContext('2d');
+        const data = {
+            labels: {{ missionLabels|json_encode|raw }}, // Statuts des missions
+            datasets: [{
+                label: 'Nombre de Missions',
+                data: {{ missionValues|json_encode|raw }}, // Nombre de missions pour chaque statut
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)', // Vert clair pour "FINIE"
+                    'rgba(255, 99, 132, 0.6)', // Rouge pour "ÉCHOUÉE"
+                    'rgba(255, 206, 86, 0.6)', // Jaune pour "EN ATTENTE"
+                    'rgba(54, 162, 235, 0.6)'  // Bleu pour "COMMENCÉE"
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+
+        new Chart(ctx, {
+            type: 'bar', // Type de graphique : barres
+            data: data,
+            options: options
+        });
+    });
+</script>
 {% endblock %}

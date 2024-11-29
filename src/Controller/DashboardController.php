@@ -27,9 +27,16 @@ class DashboardController extends AbstractController
         $herosDisponibles = $heroRepo->findBy(['estDisponible' => true]);
         $herosIndisponibles = $heroRepo->findBy(['estDisponible' => false]);
         $herosTotal = count($herosDisponibles) + count($herosIndisponibles);
-    
         $equipesActives = $equipeRepo->findBy(['estActive' => true]);
         
+          // Statistiques des missions par statut
+    $missionsStats = [
+        'FINIE' => count($missionRepo->findBy(['statut' => 'FINIE'])),
+        'ÉCHOUÉE' => count($missionRepo->findBy(['statut' => 'ÉCHOUÉE'])),
+        'EN ATTENTE' => count($missionRepo->findBy(['statut' => 'EN ATTENTE'])),
+        'COMMENCÉE' => count($missionRepo->findBy(['statut' => 'COMMENCÉE'])),
+    ];
+
         // Passer les données récupérées à la vue.
         return $this->render('/dashboard/index.html.twig', [
             'missionsEnCours' => $missionsEnCours,
@@ -37,6 +44,8 @@ class DashboardController extends AbstractController
             'herosIndisponibles' => $herosIndisponibles,
             'herosTotal' => $herosTotal,
             'equipesActives' => $equipesActives,
+            'missionLabels' => array_keys($missionsStats), // Labels des statuts
+            'missionValues' => array_values($missionsStats), // Nombre de missions par statut
         ]);
     }
     
